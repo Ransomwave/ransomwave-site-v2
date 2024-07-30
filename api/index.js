@@ -18,8 +18,12 @@ app.post("/api/donations", (req, res) => {
     return res.status(401).send("Unauthorized: Invalid client secret"); // Return 418 status code if the client secret is nil or invalid
   }
 
+  // Process the donation
   donations.push({ donorName, amount, timestamp: new Date() }); // Add timestamp for sorting
   res.status(200).send("Donation received");
+
+  // Remove the first donation from the temporary storage after processing
+  donations.shift();
 });
 
 app.get("/api/donations", (req, res) => {
