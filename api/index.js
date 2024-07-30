@@ -23,7 +23,10 @@ app.post("/api/donations", (req, res) => {
   res.status(200).send("Donation received");
 
   // Remove the first donation from the temporary storage after processing
-  donations.shift();
+  // Optionally, you can remove old donations based on some condition, e.g., keeping only the last 10 donations
+  if (donations.length >= 2) {
+    donations.shift();
+  }
 });
 
 app.get("/api/donations", (req, res) => {
