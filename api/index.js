@@ -1,5 +1,5 @@
 const CLIENT_SECRET = "roblox"; // Replace with your own client secret
-require("./bin/www");
+// require("./bin/www");
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -8,13 +8,7 @@ app.use(express.json());
 // Serve static files from the 'public' directory
 app.use(express.static("public"));
 
-interface Donation {
-  donorName: string;
-  amount: number;
-  timestamp: Date;
-}
-
-let donations: Donation[] = []; // Temporary storage for donations
+let donations = []; // Temporary storage for donations
 
 app.post("/api/donations", (req, res) => {
   const { donorName, amount, clientSecret } = req.body; // Extract clientSecret from the request body
