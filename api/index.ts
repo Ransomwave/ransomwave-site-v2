@@ -7,7 +7,13 @@ app.use(express.json());
 // Serve static files from the 'public' directory
 app.use(express.static("public"));
 
-let donations = []; // Temporary storage for donations
+interface Donation {
+  donorName: string;
+  amount: number;
+  timestamp: Date;
+}
+
+let donations: Donation[] = []; // Temporary storage for donations
 
 app.post("/api/donations", (req, res) => {
   const { donorName, amount, clientSecret } = req.body; // Extract clientSecret from the request body
