@@ -1,4 +1,4 @@
-const CLIENT_SECRET = "roblox"; // Replace with your own client secret
+const CLIENT_SECRET = process.env.CLIENT_SECRET; // Replace with your own client secret
 // require("./bin/www");
 const express = require("express");
 const app = express();
@@ -30,4 +30,4 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+app.listen(12000, () => console.log("Server running on port 3000"));
