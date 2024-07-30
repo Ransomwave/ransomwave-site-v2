@@ -6,7 +6,7 @@ const path = require("path");
 app.use(express.json());
 
 // Serve static files from the 'public' directory
-app.use(express.static("public"));
+app.use(express.static("/api/public"));
 
 let donations = []; // Temporary storage for donations
 
