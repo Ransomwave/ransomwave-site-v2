@@ -1,4 +1,5 @@
 const CLIENT_SECRET = "roblox"; // Replace with your own client secret
+require("./bin/www");
 const express = require("express");
 const app = express();
 const path = require("path");
