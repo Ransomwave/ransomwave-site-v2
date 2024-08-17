@@ -1,4 +1,4 @@
-const CLIENT_SECRET = "roblox"; // Replace with your own client secret
+const CLIENT_SECRET = "3G[Wa3Q9K!y7"; // Replace with your own client secret
 // require("./bin/www");
 const express = require("express");
 const app = express();
