@@ -1,5 +1,4 @@
 const CLIENT_SECRET = "3G[Wa3Q9K!y7"; // Replace with your own client secret
-// require("./bin/www");
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -11,7 +10,7 @@ app.use(express.static(path.join(__dirname, "public")));
 let donations = []; // Temporary storage for donations
 
 app.post("/api/donations", (req, res) => {
-  const { donorName, amount, clientSecret } = req.body; // Extract clientSecret from the request body
+  const { donorName, amount, donorMessage, clientSecret } = req.body; // Extract clientSecret from the request body
 
   // Validate the client secret
   if (clientSecret !== CLIENT_SECRET) {
@@ -19,7 +18,7 @@ app.post("/api/donations", (req, res) => {
   }
 
   // Process the donation
-  donations.push({ donorName, amount, timestamp: new Date() }); // Add timestamp for sorting
+  donations.push({ donorName, amount, donorMessage, timestamp: new Date() }); // Add timestamp for sorting
   res.status(200).send("Donation received");
 
   // Remove the first donation from the temporary storage after processing
@@ -37,4 +36,4 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
-app.listen(12000, () => console.log("Server running on port 3000"));
+app.listen(12000, () => console.log("Server running on port 12000"));

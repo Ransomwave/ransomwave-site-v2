@@ -4,7 +4,8 @@
   "description": "A simple server to handle donations",
   "main": "./api/index.js",
   "scripts": {
-    "start": "node ./api/index.js"
+    "start": "node ./api/index.js",
+    "dev": "node --watch ./api/index.js"
   },
   "dependencies": {
     "express": "^4.17.1"
