@@ -118,7 +118,7 @@
 
           const donationsDiv = document.getElementById("donations");
 
-          if (donorMessage === "") {
+          if (donorMessage == "") {
             donationsDiv.innerHTML = `<br />
               <strong>${sanitizeHTML(
                 newDonation.donorName
@@ -186,7 +186,7 @@
         // When the donation sound ends, play the TTS message after a 1-second delay
         donationSound.onended = () => {
           setTimeout(() => {
-            if (donorMessage === "") {
+            if (donorMessage == "") {
               console.log("No message provided");
             } else {
               const ttsMessage = `${donorName} donated ${amount} ROBUX: ${donorMessage}`;
