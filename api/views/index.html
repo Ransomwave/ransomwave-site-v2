@@ -118,7 +118,7 @@
 
           const donationsDiv = document.getElementById("donations");
 
-          const donationAmount = Number(amount);
+          const donationAmount = Number(newDonation.amount); // Convert
           if (donationAmount < 100) {
             donationsDiv.innerHTML = `<br />
               <strong>${sanitizeHTML(
@@ -187,7 +187,7 @@
         // When the donation sound ends, play the TTS message after a 1-second delay
         donationSound.onended = () => {
           setTimeout(() => {
-            const donationAmount = Number(amount); // Convert amount to a number
+            const donationAmount = Number(newDonation.amount); // Convert amount to a number
             if (donationAmount < 100) {
               console.log(`Donation below 100 (${donationAmount} ROBUX)`);
             } else {
