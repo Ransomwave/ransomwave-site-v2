@@ -85,17 +85,6 @@
 
       var msg = new SpeechSynthesisUtterance();
 
-      // List all possible voices for TTS
-      // You can use the following voices:
-      // Google UK English Male
-      // Google UK English Female
-      // Google US English
-      // Microsoft David Desktop - English (United States)
-      // Microsoft Zira Desktop - English (United States)
-      // Microsoft George - English (United Kingdom)
-      // Microsoft Hazel - English (United Kingdom)
-      // Microsoft Susan - English (United Kingdom)
-
       speechSynthesis.onvoiceschanged = () => {
         const voices = speechSynthesis.getVoices();
         msg.voice = voices[5];
@@ -187,7 +176,7 @@
         // When the donation sound ends, play the TTS message after a 1-second delay
         donationSound.onended = () => {
           setTimeout(() => {
-            const donationAmount = Number(newDonation.amount); // Convert amount to a number
+            const donationAmount = Number(amount); // Convert amount to a number
             if (donationAmount < 100) {
               console.log(`Donation below 100 (${donationAmount} ROBUX)`);
             } else {
