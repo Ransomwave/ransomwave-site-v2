@@ -118,30 +118,30 @@
 
           const donationsDiv = document.getElementById("donations");
 
-          if (donorMessage.length === 0) {
-                donationsDiv.innerHTML = `<br />
+          if (donorMessage === "") {
+            donationsDiv.innerHTML = `<br />
               <strong>${sanitizeHTML(
                 newDonation.donorName
               )}</strong> donated <strong>${newDonation.amount}</strong> ROBUX!
               <br />`;
-              showDonation(
-                sanitizeHTML(newDonation.donorName),
-                newDonation.amount,
-                sanitizeHTML(newDonation.donorMessage)
-              );
-            } else {
-              donationsDiv.innerHTML = `<br />
+            showDonation(
+              sanitizeHTML(newDonation.donorName),
+              newDonation.amount,
+              sanitizeHTML(newDonation.donorMessage)
+            );
+          } else {
+            donationsDiv.innerHTML = `<br />
           <strong>${sanitizeHTML(
             newDonation.donorName
           )}</strong> donated <strong>${newDonation.amount}</strong> ROBUX!
           <br />
           <i>"${sanitizeHTML(newDonation.donorMessage)}"</i>`;
-          showDonation(
-            sanitizeHTML(newDonation.donorName),
-            newDonation.amount,
-            sanitizeHTML(newDonation.donorMessage)
-          );
-            }
+            showDonation(
+              sanitizeHTML(newDonation.donorName),
+              newDonation.amount,
+              sanitizeHTML(newDonation.donorMessage)
+            );
+          }
 
           setTimeout(() => {
             hideDonation();
@@ -186,7 +186,7 @@
         // When the donation sound ends, play the TTS message after a 1-second delay
         donationSound.onended = () => {
           setTimeout(() => {
-            if (donorMessage.length === 0) {
+            if (donorMessage === "") {
               console.log("No message provided");
             } else {
               const ttsMessage = `${donorName} donated ${amount} ROBUX: ${donorMessage}`;
