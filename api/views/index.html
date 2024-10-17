@@ -186,10 +186,11 @@
         // When the donation sound ends, play the TTS message after a 1-second delay
         donationSound.onended = () => {
           setTimeout(() => {
-            if (Number(amount) < 100) {
+            const donationAmount = Number(amount); // Convert amount to a number
+            if (donationAmount < 100) {
               console.log("Donation below 100, no TTS.");
             } else {
-              const ttsMessage = `${donorName} donated ${amount} ROBUX: ${donorMessage}`;
+              const ttsMessage = `${donorName} donated ${donationAmount} ROBUX: ${donorMessage}`;
               msg.text = ttsMessage;
               window.speechSynthesis.speak(msg);
             }
