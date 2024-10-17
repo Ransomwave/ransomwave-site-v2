@@ -118,7 +118,8 @@
 
           const donationsDiv = document.getElementById("donations");
 
-          if (Number(amount) < 100) {
+          const donationAmount = Number(amount);
+          if (donationAmount < 100) {
             donationsDiv.innerHTML = `<br />
               <strong>${sanitizeHTML(
                 newDonation.donorName
@@ -188,8 +189,11 @@
           setTimeout(() => {
             const donationAmount = Number(amount); // Convert amount to a number
             if (donationAmount < 100) {
-              console.log("Donation below 100, no TTS.");
+              console.log(`Donation below 100 (${donationAmount} ROBUX)`);
             } else {
+              console.log(
+                `Donation above 100, playing TTS: ${donorName} donated ${donationAmount} ROBUX: ${donorMessage}`
+              );
               const ttsMessage = `${donorName} donated ${donationAmount} ROBUX: ${donorMessage}`;
               msg.text = ttsMessage;
               window.speechSynthesis.speak(msg);
