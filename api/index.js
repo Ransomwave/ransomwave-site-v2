@@ -1,4 +1,4 @@
-const CLIENT_SECRET = "3G[Wa3Q9K!y7"; // Replace with your own client secret
+const CLIENT_SECRET = "Dkr|@3X6+rP6"; // Replace with your own client secret
 const express = require("express");
 const app = express();
 const path = require("path");
