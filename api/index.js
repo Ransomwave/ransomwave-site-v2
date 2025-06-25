@@ -1,4 +1,14 @@
-const CLIENT_SECRET = "Dkr|@3X6+rP6"; // Replace with your own client secret
+const CLIENT_SECRET = process.env.CLIENT_SECRET; // Replace with your own client secret
+
+// To validate our client's secret, we need to use a variable inside the .env file
+// Make sure to create a .env file at the root (inside the folder) of the project with the CLIENT_SECRET
+if (!CLIENT_SECRET) {
+  console.error(
+    `Error: CLIENT_SECRET is not set. Please set the CLIENT_SECRET environment variable inside a ".env" at the root of the project.`
+  );
+  process.exit(1); // Exit the process if CLIENT_SECRET is not set
+}
+
 const express = require("express");
 const app = express();
 const path = require("path");
