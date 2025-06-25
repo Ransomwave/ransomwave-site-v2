@@ -24,7 +24,7 @@ app.post("/api/donations", (req, res) => {
 
   // Validate the client secret
   if (clientSecret !== CLIENT_SECRET) {
-    return res.status(401).send("Unauthorized: Invalid client secret"); // Return 418 status code if the client secret is nil or invalid
+    return res.status(401).send("Unauthorized: Invalid client secret"); // Return 401 status code if the client secret is nil or invalid
   }
 
   // Process the donation
