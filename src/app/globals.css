@@ -1,7 +1,8 @@
+@import url(https://fonts.cdnfonts.com/css/minecraft-3);
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
+/* :root {
+  --background: #171717;
   --foreground: #171717;
 }
 
@@ -17,10 +18,117 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+} */
+/* visitor1 font */
+@font-face {
+  font-family: "visitor_tt1_brkregular";
+  src: url("https://ruu.neocities.org/visitor1-webfont.eot");
+  src: url("https://ruu.neocities.org/visitor1-webfontd41d.eot?#iefix")
+      format("embedded-opentype"),
+    url("https://ruu.neocities.org/visitor1-webfont.woff2") format("woff2"),
+    url("https://ruu.neocities.org/visitor1-webfont.woff") format("woff"),
+    url("https://ruu.neocities.org/visitor1-webfont.ttf") format("truetype"),
+    url("https://ruu.neocities.org/visitor1-webfont.svg#visitor_tt1_brkregular")
+      format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Minecraft font
+@font-face {
+  font-family: "Minecraft";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Minecraft"),
+    url("https://fonts.cdnfonts.com/s/25041/1_MinecraftRegular1.woff")
+      format("woff");
+}
+@font-face {
+  font-family: "Minecraft";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Minecraft"),
+    url("https://fonts.cdnfonts.com/s/25041/2_MinecraftItalic1.woff")
+      format("woff");
+}
+@font-face {
+  font-family: "Minecraft";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Minecraft"),
+    url("https://fonts.cdnfonts.com/s/25041/3_MinecraftBold1.woff")
+      format("woff");
+}
+@font-face {
+  font-family: "Minecraft";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Minecraft"),
+    url("https://fonts.cdnfonts.com/s/25041/4_MinecraftBoldItalic1.woff")
+      format("woff");
+} */
+
+/* 04b font */
+@font-face {
+  font-family: "04b";
+  src: url(/src/fonts/04B_09__.TTF);
+  font-display: swap;
+}
+
+/* Keyframes */
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes bg-scroll {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -100% -100%;
+  }
+}
+
+/* For splashtext */
+@keyframes pop {
+  from {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.95);
+  }
+}
+@-webkit-keyframes pop {
+  from {
+    -webkit-transform: scale(0.95);
+  }
+  50% {
+    -webkit-transform: scale(1);
+  }
+  to {
+    -webkit-transform: scale(0.95);
+  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(82, 82, 82);
+  color: white;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "04b";
 }
