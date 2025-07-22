@@ -77,6 +77,10 @@ const snowySplashes = [
 ];
 const newyearSplash = ["Happy New Year!", "World's ending today!"];
 
+function randomItem<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 function getSplash(): string {
   const now = new Date();
   const day = now.getDate();
@@ -97,10 +101,6 @@ function getSplash(): string {
   }
 
   return randomItem(splashWords);
-}
-
-function randomItem<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export default function SplashText() {
