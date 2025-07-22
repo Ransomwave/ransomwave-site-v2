@@ -14,7 +14,7 @@ export default function BackgroundLayer() {
         alt="Top Black Bar"
         width={1920}
         height={1080}
-        className="fixed top-0 left-0 w-full -z-10 hidden md:block"
+        className="fixed top-0 left-0 w-full -z-10 hidden md:block select-none pointer-events-none"
         priority
       />
 
@@ -24,7 +24,7 @@ export default function BackgroundLayer() {
         alt="Bottom Black Bar"
         width={1920}
         height={1080}
-        className="fixed bottom-0 left-0 w-full -z-10 hidden md:block"
+        className="fixed bottom-0 left-0 w-full -z-10 hidden md:block select-none pointer-events-none"
         priority
       />
     </>
