@@ -6,7 +6,8 @@ const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 // Route handler: use standard Next.js pattern without explicit typing to avoid validation errors
 export async function GET(request: NextRequest, context: any) {
-  const { placeId } = context.params;
+  const params = await context.params;
+  const { placeId } = params;
 
   // Check cache first
   const cacheKey = `roblox-game-${placeId}`;

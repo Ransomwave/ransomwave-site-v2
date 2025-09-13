@@ -14,27 +14,26 @@ export default function Home() {
         {" "}
         {/* This is a flexbox */}
         <p className="w-[95%] sm:w-[60%] leading-5 md:text-[.9em]">
-          I'm <b>Ransomwave</b>, an indie game developer with ~4 years
-          experience in Lua/Luau, developing mostly for Roblox.
+          I'm <b>Ransomwave</b>, a small but passionate indie game developer
+          based in Spain.
           <br />
           <br />
-          You may recognize me work from the singleplayer game{" "}
+          You may recognize me from the singleplayer game{" "}
           <b>get a drink at 3 am</b>
           , my solo project which has amassed over 70,000,000 plays on Roblox.
           <br />
           <br />
-          Although I've mostly found success in game development, I also enjoy
-          programming in general. In my free time, I like to work on small
-          projects & learn new things.
+          I enjoy programming in general. In my free time, I like to work on
+          small projects & learn new things.
           <br />
           <br />
           Check out my{" "}
-          <Link className="underline" href="/games">
+          <Link className="underline font-bold" href="/games">
             games
           </Link>
           ,{" "}
-          <Link className="underline" href="/projects">
-            non-game projects
+          <Link className="underline font-bold" href="/other-projects">
+            projects
           </Link>
           , & more!
           <br />
