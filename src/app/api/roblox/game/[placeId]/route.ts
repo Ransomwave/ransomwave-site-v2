@@ -4,11 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
 
+// Route handler: context second param must be a single object; avoid over-constraining type to prevent Next.js export validation errors.
 export async function GET(
   request: NextRequest,
-  { params }: { params: { placeId: string } }
+  context: { params: { placeId: string } }
 ) {
-  const { placeId } = params;
+  const { placeId } = context.params;
 
   // Check cache first
   const cacheKey = `roblox-game-${placeId}`;
