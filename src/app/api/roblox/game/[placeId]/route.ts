@@ -4,11 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
 
-// Route handler: context second param must be a single object; avoid over-constraining type to prevent Next.js export validation errors.
-export async function GET(
-  request: NextRequest,
-  context: { params: { placeId: string } }
-) {
+// Route handler: use standard Next.js pattern without explicit typing to avoid validation errors
+export async function GET(request: NextRequest, context: any) {
   const { placeId } = context.params;
 
   // Check cache first
