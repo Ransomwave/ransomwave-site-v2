@@ -6,6 +6,7 @@ import "./globals.css";
 import BackgroundLayer from "@/components/background";
 import AsciiBanner from "@/components/ascii-banner";
 import Navbar from "@/components/navbar";
+import Socials from "@/components/socials";
 
 export const metadata: Metadata = {
   title: "Ransomwave's Games",
@@ -37,6 +38,7 @@ export default function RootLayout({
           <Navbar />
           <div className="border-1 border-[#ffffff62] bg-[rgba(0,0,0,0.3)] backdrop-blur-xs rounded-md shadow-[black_0_0_15px] p-4 sm:p-8">
             {children}
+            <Socials />
           </div>
         </div>
       </body>
