@@ -18,10 +18,10 @@ export default function Navbar() {
         games
       </Link>
       <Link
-        href="/projects"
+        href="/other-projects"
         className="font-bold hover:text-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
       >
-        projects
+        other projects
       </Link>
       <Link
         href="/blog"

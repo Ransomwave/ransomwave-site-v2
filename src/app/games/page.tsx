@@ -6,10 +6,9 @@ export default function Games() {
       <h1 className="text-[100%] md:text-[1.2vw] mb-[2%] text-center">
         MY GAMES
       </h1>
-      {/* <p className="leading-5 md:text-[.9em] text-center mx-auto">
-        A collection of all my publicly available games. Click on any game to be
-        for more info.!
-      </p> */}
+      <p className="leading-5 md:text-[.9em] text-center mx-auto">
+        A collection of all my published Roblox games. Click on a game to play!
+      </p>
       <div className="flex flex-row items-stretch flex-wrap justify-center mt-4 gap-4">
         <GameCard
           title="get a drink at 3 am"
@@ -30,6 +29,10 @@ export default function Games() {
           title="Steal a SOUL"
           link="https://www.roblox.com/games/127603676641718/"
           description='Game inspired by "Steal a Brainrot", where you have to Steal a Deltarune or Undertale character.'
+        />
+        <GameCard
+          title="TTRE"
+          link="https://www.roblox.com/games/3196621022/"
         />
         <GameCard
           title="MAD CAROUSEL"
