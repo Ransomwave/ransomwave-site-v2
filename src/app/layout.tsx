@@ -7,6 +7,7 @@ import BackgroundLayer from "@/components/background";
 import AsciiBanner from "@/components/ascii-banner";
 import Navbar from "@/components/navbar";
 import Socials from "@/components/socials";
+import QueryProvider from "@/components/query-provider";
 
 export const metadata: Metadata = {
   title: "Ransomwave's Games",
@@ -31,16 +32,18 @@ export default function RootLayout({
 
       {/* Actual content */}
       <body className={`text-lg antialiased dark `}>
-        <BackgroundLayer />
+        <QueryProvider>
+          <BackgroundLayer />
 
-        <div className="w-[90%] sm:w-[55%] sm:max-w-[1300px] md:mt-[10%] relative mx-auto">
-          <AsciiBanner />
-          <Navbar />
-          <div className="border-1 border-[#ffffff62] bg-[rgba(0,0,0,0.3)] backdrop-blur-xs rounded-md shadow-[black_0_0_15px] p-4 sm:p-8">
-            {children}
-            <Socials />
+          <div className="w-[90%] sm:w-[55%] sm:max-w-[1300px] md:mt-[10%] relative mx-auto">
+            <AsciiBanner />
+            <Navbar />
+            <div className="border-1 border-[#ffffff62] bg-[rgba(0,0,0,0.3)] backdrop-blur-xs rounded-md shadow-[black_0_0_15px] p-4 sm:p-8">
+              {children}
+              <Socials />
+            </div>
           </div>
-        </div>
+        </QueryProvider>
       </body>
     </html>
   );

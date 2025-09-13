@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 interface GameCardProps {
   title: string;
@@ -32,45 +32,35 @@ interface RobloxGameData {
 }
 
 const GameCard = ({ title, link, placeId, description }: GameCardProps) => {
-  const [robloxData, setRobloxData] = useState<RobloxGameData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   // Extract place ID from Roblox URL if not provided
   const extractPlaceId = (url: string): string | null => {
     if (placeId) return placeId;
-
     const robloxMatch = url.match(/roblox\.com\/games\/(\d+)/);
     return robloxMatch ? robloxMatch[1] : null;
   };
 
-  useEffect(() => {
-    const gameId = extractPlaceId(link);
+  const gameId = extractPlaceId(link);
+  const isRobloxGame = gameId && link.includes("roblox.com");
 
-    if (gameId && link.includes("roblox.com")) {
-      setLoading(true);
-      setError(null);
-
-      fetch(`/api/roblox/game/${gameId}`)
-        .then((response) => {
-          return response.json();
-        })
-        .then((data: RobloxGameData) => {
-          if (data.error) {
-            console.warn("API returned with error:", data.error);
-            setError(data.error);
-          }
-          setRobloxData(data);
-        })
-        .catch((err) => {
-          console.error("Error fetching Roblox data:", err);
-          setError("Failed to load game data");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [link, placeId]);
+  // Fetch Roblox data using React Query
+  const {
+    data: robloxData,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["roblox-game", gameId],
+    queryFn: async (): Promise<RobloxGameData> => {
+      const response = await fetch(`/api/roblox/game/${gameId}`);
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      return data;
+    },
+    enabled: !!isRobloxGame, // Only run query if it's a Roblox game
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  });
 
   const formatNumber = (num: number): string => {
     // if (num >= 1000000000) return (num / 1000000000).toFixed(1) + "B";
@@ -96,7 +86,7 @@ const GameCard = ({ title, link, placeId, description }: GameCardProps) => {
       };
 
   return (
-    <div className="border border-[#ffffff62] bg-[rgba(0,0,0,0.3)] backdrop-blur-xs rounded-md shadow-[black_0_0_15px] p-4 lg:w-[40%] md:w-[60%] max-w-[100%] text-center relative">
+    <div className="border border-[#ffffff62] bg-[rgba(0,0,0,0.3)] backdrop-blur-xs rounded-md shadow-[black_0_0_15px] p-4 lg:w-[40%] md:w-[60%] max-w-[100%] text-center relative flex flex-col">
       {/* Game Thumbnail */}
       <div className="relative pb-[5%]">
         <Image
@@ -170,9 +160,9 @@ const GameCard = ({ title, link, placeId, description }: GameCardProps) => {
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block text-sm text-red-500 hover:underline transition-colors hover:text-red-400"
+          className="mt-2 inline-block text-sm transition-colors bg-[rgba(255,255,255,0.1)] w-[100%] rounded-md p-2 py-3 hover:bg-[rgba(255,255,255,0.2)]"
         >
-          Play Now
+          <Icon icon="ri:play-large-fill" className="mx-auto" />
         </Link>
       </div>
     </div>
