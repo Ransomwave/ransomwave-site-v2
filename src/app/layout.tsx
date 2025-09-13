@@ -28,6 +28,7 @@ export default function RootLayout({
           content="Ransomwave, Ransomwave's Games, Roblox, Ransomwave Roblox, Ransomwave Games, gada3, get a drink at 3 am"
         />
         <meta name="robots" content="index, follow" /> */}
+        <link rel="icon" type="image/svg" href="/fav.ico" />
       </head>
 
       {/* Actual content */}
