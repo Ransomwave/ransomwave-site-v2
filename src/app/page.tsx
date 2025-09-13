@@ -13,14 +13,14 @@ export default function Home() {
       <div className="flex flex-col sm:flex-row items-center justify-center gap-[10%]">
         {" "}
         {/* This is a flexbox */}
-        <p className="w-[95%] sm:w-[60%] leading-5 md:text-[1em]">
+        <p className="w-[95%] sm:w-[60%] leading-5 md:text-[.9em]">
           I'm <b>Ransomwave</b>, an indie game developer with ~4 years
           experience in Lua/Luau, developing mostly for Roblox.
           <br />
           <br />
           You may recognize me work from the singleplayer game{" "}
           <b>get a drink at 3 am</b>
-          , my solo project which has amassed over 50,000,000 plays on Roblox.
+          , my solo project which has amassed over 70,000,000 plays on Roblox.
           <br />
           <br />
           Although I've mostly found success in game development, I also enjoy
