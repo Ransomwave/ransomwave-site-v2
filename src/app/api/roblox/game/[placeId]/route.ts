@@ -1,13 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// In-memory cache for development (use Redis/external cache in production)
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { placeId: string } }
 ) {
   const { placeId } = params;
 
+  // Check cache first
+  const cacheKey = `roblox-game-${placeId}`;
+  const cachedData = cache.get(cacheKey);
+
+  if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
+    console.log(`Returning cached data for placeId: ${placeId}`);
+    return NextResponse.json(cachedData.data, {
+      headers: {
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300",
+      },
+    });
+  }
+
   try {
-    console.log(`Fetching data for placeId: ${placeId}`);
+    console.log(`Fetching fresh data for placeId: ${placeId}`);
 
     // Get universe ID from place ID
     const universeResponse = await fetch(
@@ -195,8 +212,15 @@ export async function GET(
       genre: game.genre,
     };
 
+    // Cache the successful result
+    cache.set(cacheKey, { data: result, timestamp: Date.now() });
+
     console.log("Final result:", result);
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=300",
+      },
+    });
   } catch (error) {
     console.error("Error fetching Roblox data:", error);
 
