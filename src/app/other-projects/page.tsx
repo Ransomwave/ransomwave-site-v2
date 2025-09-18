@@ -39,6 +39,13 @@ export default function OtherProjectsPage() {
         />
 
         <ProjectCard
+          title="Bacon Man (Bot)"
+          description="Bacon Man is a Discord bot built using Nextcord that provides various features including game stats retrieval, starboard functionality, attachment limit enforcement, & more. I created this bot to manage my own Discord server."
+          technologies={["Python", "Discord.py", "Nextcord"]}
+          githubUrl="https://github.com/Ransomwave/bacon-man-bot"
+        />
+
+        <ProjectCard
           title="Aseprite Extrude Tool"
           description="Aseprite script to extrude tilesets and reduce texture bleeding on game engines. Originally made as a web app by @sergiss, ported to Aseprite Lua by me."
           technologies={["Lua"]}
