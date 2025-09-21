@@ -90,10 +90,21 @@
   }
 }
 
+html {
+  /* scrollbar-gutter: stable; Reserve space */
+  overflow-y: scroll; /* Show only when needed */
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* make scrollbar transparent */
+}
+
 body {
   background-color: rgb(82, 82, 82);
   color: white;
   font-family: "Epilogue", sans-serif;
+  overflow-y: overlay;
 }
 
 h1,
