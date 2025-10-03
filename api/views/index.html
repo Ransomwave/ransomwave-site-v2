@@ -131,9 +131,17 @@
 
       var msg = new SpeechSynthesisUtterance();
 
-      speechSynthesis.onvoiceschanged = () => {
-        const voices = speechSynthesis.getVoices();
+      // Initialize voices
+      let voices = speechSynthesis.getVoices();
+      if (voices.length > 5) {
         msg.voice = voices[5];
+      }
+
+      speechSynthesis.onvoiceschanged = () => {
+        voices = speechSynthesis.getVoices();
+        if (voices.length > 5) {
+          msg.voice = voices[5];
+        }
       };
 
       async function fetchDonations() {
@@ -141,6 +149,8 @@
 
         const response = await fetch("/api/donations");
         const donations = await response.json();
+
+        console.log("Fetched donations:", donations);
 
         const newDonation = donations.find(
           (donation) =>
