@@ -37,6 +37,7 @@ export default function Games() {
         <GameCard
           title="MAD CAROUSEL"
           link="https://www.roblox.com/games/70527455113620/"
+          githubUrl="https://github.com/Ransomwave/mad-carousel"
         />
       </div>
     </>

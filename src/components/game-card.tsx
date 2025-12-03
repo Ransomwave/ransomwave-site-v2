@@ -10,6 +10,7 @@ interface GameCardProps {
   link: string;
   description?: string;
   placeId?: string;
+  githubUrl?: string;
 }
 
 interface RobloxGameData {
@@ -31,7 +32,13 @@ interface RobloxGameData {
   error?: string;
 }
 
-const GameCard = ({ title, link, placeId, description }: GameCardProps) => {
+const GameCard = ({
+  title,
+  link,
+  placeId,
+  description,
+  githubUrl,
+}: GameCardProps) => {
   // Extract place ID from Roblox URL if not provided
   const extractPlaceId = (url: string): string | null => {
     if (placeId) return placeId;
@@ -155,15 +162,35 @@ const GameCard = ({ title, link, placeId, description }: GameCardProps) => {
         {displayData.description || "No description available."}
       </p>
 
-      <div className="mt-auto">
-        <Link
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 inline-block text-sm transition-colors bg-[rgba(255,255,255,0.1)] w-[100%] rounded-md p-2 py-3 hover:bg-[rgba(255,255,255,0.2)]"
-        >
-          <Icon icon="ri:play-large-fill" className="mx-auto" />
-        </Link>
+      {/* Buttons */}
+      <div className="mt-auto flex gap-2">
+        {link && (
+          <Link
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 text-sm transition-colors bg-[rgba(255,255,255,0.1)] rounded-md p-2 py-3 hover:bg-[rgba(255,255,255,0.2)] flex items-center justify-center gap-2"
+          >
+            <Icon icon="ri:play-large-fill" className="mx-auto" />
+          </Link>
+        )}
+        {githubUrl && (
+          <Link
+            href={githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 text-sm transition-colors bg-[rgba(255,255,255,0.1)] rounded-md p-2 py-3 hover:bg-[rgba(255,255,255,0.2)] flex items-center justify-center gap-2"
+          >
+            <Icon icon="ri:github-fill" />
+            <span>GitHub</span>
+          </Link>
+        )}
+        {!githubUrl && !link && (
+          <div className="flex-1 text-sm bg-[rgba(255,255,255,0.1)] rounded-md p-2 py-3 text-gray-400 flex items-center justify-center gap-2">
+            <Icon icon="ri:github-fill" />
+            <span>Check out code</span>
+          </div>
+        )}
       </div>
     </div>
   );
