@@ -24,11 +24,26 @@ export default function OtherProjectsPage() {
         /> */}
 
         <ProjectCard
-          title="ransomwave.games (Source)"
-          description="My personal website built with Next.js, TailwindCSS, and hosted on Vercel. Features a custom API to fetch Roblox game stats."
-          technologies={["Next.js", "TailwindCSS", "TypeScript", "Vercel"]}
+          title="Azul"
+          description="Azul is a two-way synchronization tool between Roblox Studio and your local filesystem. "
+          technologies={["TypeScript", "Node.js", "Luau"]}
+          githubUrl="https://github.com/Ransomwave/azul"
+          imageUrl="/images/projects/azul-logo.png"
+        />
+
+        <ProjectCard
+          title="ransomwave.games"
+          description="Source code for this website. Features a custom API to fetch Roblox game stats."
+          technologies={[
+            "Next.js",
+            "TailwindCSS",
+            "TypeScript",
+            "Vercel",
+            "ExpressJS",
+          ]}
           githubUrl="https://github.com/Ransomwave/ransomwave-site-v2"
           liveUrl="https://ransomwave.games"
+          imageUrl="/images/projects/ransomwave-logo.png"
         />
 
         <ProjectCard

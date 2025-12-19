@@ -32,7 +32,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             alt={title}
             width={500}
             height={300}
-            className="w-[80%] h-auto rounded-md mx-auto"
+            className="w-[80%] h-48 rounded-md mx-auto object-contain p-7 bg-[rgba(255,255,255,0.1)]"
             priority={false}
           />
         ) : (
@@ -61,6 +61,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           ))}
         </div>
       )}
+
+      {/* Project stats */}
+      {/* <div className="flex justify-center mb-4 gap-2">
+        <Icon icon="mynaui:star-solid" />
+        <span className="">177</span>
+        <Icon icon="eos-icons:fork" />
+        <span className="">38</span>
+      </div> */}
 
       {/* Action Buttons */}
       <div className="mt-auto flex gap-2">
