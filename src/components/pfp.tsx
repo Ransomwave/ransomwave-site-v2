@@ -5,7 +5,7 @@ const ProfilePicture = () => {
     <div className="overflow-hidden rounded-lg">
       <div className="relative">
         <Image
-          src="/images/pfp.webp"
+          src="/images/pfp.jpg"
           alt="Ransomwave PFP"
           width={200}
           height={200}
