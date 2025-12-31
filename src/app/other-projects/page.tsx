@@ -1,6 +1,11 @@
-"use client";
-
 import ProjectCard from "@/components/project-card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Other Projects - Ransomwave's Games",
+  description:
+    "A collection of my software projects, including open-source repositories and web applications.",
+};
 
 export default function OtherProjectsPage() {
   return (

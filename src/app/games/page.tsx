@@ -1,4 +1,11 @@
 import GameCard from "@/components/game-card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "My Games",
+  description:
+    "A collection of all my published Roblox games. Click on a game to play!",
+};
 
 export default function Games() {
   return (

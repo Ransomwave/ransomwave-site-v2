@@ -1,6 +1,13 @@
 import AsciiBanner from "@/components/ascii-banner";
 import ProfilePicture from "@/components/pfp";
+import { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Ransomwave's Games",
+  description:
+    "Welcome to my website! Check out Ransomwave's portfolio, Roblox games, community, projects & more!",
+};
 
 export default function Home() {
   return (

@@ -9,12 +9,6 @@ import Navbar from "@/components/navbar";
 import Socials from "@/components/socials";
 import QueryProvider from "@/components/query-provider";
 
-export const metadata: Metadata = {
-  title: "Ransomwave's Games",
-  description:
-    "Welcome to my website! Check out Ransomwave's portfolio, Roblox games, community, projects & more!",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
