@@ -7,8 +7,7 @@ const splashWords = [
   "Everchanging!",
   "This is the rarest splash text. Lucky!",
   "I'll miss you, Neocities",
-  "I <3 the web",
-  "Coded using Next.js!",
+  "Coded with Next.js!",
   "Coded with magic!",
   "Minecraft enjoyer.",
   '"One of the websites of all time" -IGN',
@@ -16,29 +15,20 @@ const splashWords = [
   "Play my games!",
   "Follow my socials!",
   "This is the best landing page. Change my mind.",
-  // "My real name is\n[REDACTED]",
-  // "My social security number is\n[REDACTED]",
-  // "My credit card number is \n[REDACTED]",
   "[REDACTED]",
   "Probably an alien",
   "Probably an extraterrestrial being",
-  // "IT'S PIZZA TIME!!",
-  "Shout out to my buddies:\nto, too and two",
-  "Shout out to my buddies:\ntheir, there and they're",
   "Minecraft?",
   "Terraria?",
   "Roblox?",
-  "????????????????",
+  "?????????",
   "Made with <3!",
   "Splash text inspired by Minecraft!",
   "Now with a GOOD codebase!",
   "how_to_make_good_website.mp4",
   "Now with ASCII art!",
-  // "* But nobody came.",
-  // "* have you ever heard of a talking flower?",
   "* It's you!",
   "* Despite everything, it's still you.",
-  // "* NOW'S YOUR CHANCE TO BE A [[BIG SHOT]]!!",
   "* [[Hyperlink Blocked]]",
   "Join my group!",
   "Website built on hopes and dreams",
@@ -107,7 +97,7 @@ export default function SplashText() {
   return (
     <>
       <div className="rotate-[-10deg]">
-        <p className="absolute text-yellow-300 ml-[60%] text-[100%] text-shadow-[3px_3px_#070700] text-center animate-[pop_0.58s_infinite] whitespace-pre-line font-[minecraft]">
+        <p className="absolute text-yellow-300 ml-[65%] text-[100%] text-shadow-[3px_3px_#070700] text-center animate-[pop_0.58s_infinite] whitespace-pre-line font-[minecraft]">
           {splash}
         </p>
       </div>
