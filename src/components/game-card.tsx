@@ -99,7 +99,7 @@ const GameCard = ({
         <Image
           src={
             displayData.thumbnailUrl ||
-            "/images/game-assets/thumbnail-placeholder.jpg"
+            "/images/game-assets/thumbnail-placeholder.webp"
           }
           alt={displayData.name}
           width={500}
@@ -127,7 +127,7 @@ const GameCard = ({
           <div className="text-sm drop-shadow-[0_0_2px_black]">Loading...</div>
         ) : error ? (
           <div className="text-sm text-red-400 drop-shadow-[0_0_2px_black]">
-            Error
+            Error loading stats
           </div>
         ) : (
           <>
