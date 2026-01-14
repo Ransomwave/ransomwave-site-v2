@@ -1,0 +1,53 @@
+---
+title: "Roblox's Old Hidden Images"
+date: "2024-12-11"
+description: "An in-depth look at some of the remnants of a bygone time of Roblox's website design."
+thumbnailUrl: ""
+---
+
+For [how popular](https://romonitorstats.com/) Roblox as a platform is, you may sometimes forget how stitched together the website is. A great example of this: for those of you who have been on this website for a while, you'll likely remember the insane discrepancy between the design of the main website & the "Develop" tab.
+![Image](https://storage.googleapis.com/openscreenshot/x%2Fb%2F3/vt1zeQ3bx.png)
+
+_This page shares a design language with the pre-2015 website. It also didn't support dark mode!_
+
+Today, things seem to have marginally improved. The "Develop" tab (called "Create") doesn't blast your eyes with nostalgia from the 2010s (and the lack of dark mode), but it still doesn't seem to be consistent with the rest of the website.
+
+## Some cool things I found
+
+While going through my free time activities (of examining Roblox.com's HTML and CSS for fun), I noticed the unique way they display icons.
+
+<div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    flexBasis: 0,
+    gap: "20px",
+    flexWrap: "wrap",
+    marginBottom: "20px",
+  }}
+>
+  <img
+    src="https://storage.googleapis.com/openscreenshot/Z%2Fy%2FT/8hm1s7TyZ.png"
+    style={{ objectFit: "contain", height: "500px" }}
+  ></img>
+  <img
+    src="https://storage.googleapis.com/openscreenshot/7%2Fv%2Fy/woypDCyv7.png"
+    style={{ objectFit: "contain", height: "500px" }}
+  ></img>
+</div>
+
+Each icon on the left image is taken from the big spritesheet on the right. The full image is loaded into every single icon slot and is "cropped" to only fit an icon, after which it's moved using the `background-position` CSS property.
+
+Ever wondered how the _Limited_ or _Unique_ tags got added to items on the catalog? You may think they are separate images, but nope! They are also part of a big SVG spritesheet.
+
+![Image](https://images.rbxcdn.com/cee28149fd95dbd30bfea3be7f7df6aa-itemlabel_10182018.svg)
+
+This image still has some of the old tags that Roblox used to use, like the "BC", "TBC" or "OBC" tags, as well as "13+" items... Remember those?
+
+These sorts of spritesheets were primarily used to technical limitations back in the day of `HTTP/1.1`, which limited the number of simultaneous connections a browser could make to a server. By combining multiple images into a spritesheet, they could reduce the number of HTTP requests needed to load a page. What surprises me the most is that Roblox still uses this technique in 2026, despite more modern standards `HTTP/2` and `HTTP/3` being widely adopted.
+
+![Image](https://storage.googleapis.com/openscreenshot/K%2FO%2F0/LvrMLx0OK.png)
+
+And this is just the tip of the iceberg of everything that I found. If you dig deep enough, you can find all sorts of discontinued features. Here's a modernized version of the Tix logo!
+
+Really makes me wonder what sort of technical debt/legacy content the website carries in its source code. Seems like despite their best efforts to [erase their history](https://x.com/LilyGia_/status/1564701375690379265), they really can't get away from it!

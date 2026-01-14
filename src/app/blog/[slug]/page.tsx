@@ -82,7 +82,18 @@ export default async function BlogPost({
       <li className="mb-2" {...props} />
     ),
     a: (props: React.ComponentProps<"a">) => (
-      <a className="text-red-500 underline" {...props} />
+      <a className="text-red-500 underline" target="_blank" {...props} />
+    ),
+    code: (props: React.ComponentProps<"code">) => (
+      <code
+        className="bg-[rgba(0,0,0,0.4)] px-1 py-0.6 rounded font-mono"
+        {...props}
+      />
+    ),
+    img: (props: React.ComponentProps<"img">) => (
+      <div className="flex justify-center max-h-[1000px]">
+        <img className="my-4 rounded-md shadow-md object-contain" {...props} />
+      </div>
     ),
   };
 
