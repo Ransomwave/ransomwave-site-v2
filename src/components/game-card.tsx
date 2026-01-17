@@ -7,10 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 
 interface GameCardProps {
   title: string;
-  link: string;
+  link?: string;
   description?: string;
   placeId?: string;
   githubUrl?: string;
+  thumbnailUrl?: string;
+  iconUrl?: string;
 }
 
 interface RobloxGameData {
@@ -38,6 +40,8 @@ const GameCard = ({
   placeId,
   description,
   githubUrl,
+  thumbnailUrl,
+  iconUrl,
 }: GameCardProps) => {
   // Extract place ID from Roblox URL if not provided
   const extractPlaceId = (url: string): string | null => {
@@ -46,8 +50,8 @@ const GameCard = ({
     return robloxMatch ? robloxMatch[1] : null;
   };
 
-  const gameId = extractPlaceId(link);
-  const isRobloxGame = gameId && link.includes("roblox.com");
+  const gameId = extractPlaceId(link || "");
+  const isRobloxGame = gameId && link && link.includes("roblox.com");
 
   // Fetch Roblox data using React Query
   const {
@@ -80,8 +84,10 @@ const GameCard = ({
   const displayData = robloxData
     ? {
         ...robloxData,
-        // Use explicit description if provided, otherwise use API description
+        // Use explicit if provided, otherwise use API description
         description: description || robloxData.description,
+        thumbnailUrl: thumbnailUrl || robloxData.thumbnailUrl,
+        iconUrl: iconUrl || robloxData.iconUrl,
       }
     : {
         name: title,
@@ -99,6 +105,7 @@ const GameCard = ({
         <Image
           src={
             displayData.thumbnailUrl ||
+            thumbnailUrl ||
             "/images/game-assets/thumbnail-placeholder.webp"
           }
           alt={displayData.name}
@@ -127,7 +134,7 @@ const GameCard = ({
           <div className="text-sm drop-shadow-[0_0_2px_black]">Loading...</div>
         ) : error ? (
           <div className="text-sm text-red-400 drop-shadow-[0_0_2px_black]">
-            Error loading stats
+            Couldn't load stats
           </div>
         ) : (
           <>
@@ -187,8 +194,8 @@ const GameCard = ({
         )}
         {!githubUrl && !link && (
           <div className="flex-1 text-sm bg-[rgba(255,255,255,0.1)] rounded-md p-2 py-3 text-gray-400 flex items-center justify-center gap-2">
-            <Icon icon="ri:github-fill" />
-            <span>Check out code</span>
+            <Icon icon="ri:time-fill" />
+            <span>Coming soon!</span>
           </div>
         )}
       </div>

@@ -19,11 +19,15 @@ export default function Games() {
         Ransomwave's Games
       </h2>
       <p className="leading-5 md:text-[.9em] text-center mx-auto px-[5%]">
-        Published under "Ransomwave's Games", these are games made primarely
-        from passion. From story-driven adventures to experimental game
-        mechanics, these are some of my best and most popular.
+        These are my primary games that I personally develop and maintain. They
+        often feature more complex mechanics and deeper gameplay experiences.
       </p>
       <div className="flex flex-row items-stretch flex-wrap justify-center mt-4 gap-4">
+        <GameCard
+          title="ABOVE"
+          description="ABOVE is an upcoming story-based RPG with a very unique artstyle. Set in the ABOVE, a world that grows colder the closer you get to the truth, you must find your way back down home."
+          thumbnailUrl="/images/game-assets/above-thumbnail.png"
+        />
         <GameCard
           title="get a drink at 3 am"
           link="https://www.roblox.com/games/8197423034/"
@@ -55,7 +59,7 @@ export default function Games() {
         Windows 93
       </h2>
       <p className="leading-5 md:text-[.9em] text-center mx-auto px-[5%]">
-        WINDOWS 93 is my secondary publishing outlet. Here, I publish scalable,
+        WINDOWS 93 is my secondary publishing outlet where I publish scalable,
         widely-appealing games that are easy to pick up and play.
       </p>
       <div className="flex flex-row items-stretch flex-wrap justify-center mt-4 gap-4">
