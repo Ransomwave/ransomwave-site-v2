@@ -19,8 +19,9 @@ export default function Games() {
         Ransomwave's Games
       </h2>
       <p className="leading-5 md:text-[.9em] text-center mx-auto px-[5%]">
-        These are my primary games that I personally develop and maintain. They
-        often feature more complex mechanics and deeper gameplay experiences.
+        Here are primarely games I consider to be my "main" games, whether
+        because of their popularity or because of the amount of work I put into
+        them.
       </p>
       <div className="flex flex-row items-stretch flex-wrap justify-center mt-4 gap-4">
         <GameCard
@@ -56,22 +57,22 @@ export default function Games() {
       </div>
 
       <h2 className="text-[100%] md:text-[1.2vw] mt-[2%] text-center">
-        Windows 93
+        Other games
       </h2>
       <p className="leading-5 md:text-[.9em] text-center mx-auto px-[5%]">
-        WINDOWS 93 is my secondary publishing outlet where I publish scalable,
-        widely-appealing games that are easy to pick up and play.
+        Other games I've worked on.
       </p>
       <div className="flex flex-row items-stretch flex-wrap justify-center mt-4 gap-4">
         <GameCard
           title="MAD CAROUSEL"
           link="https://www.roblox.com/games/70527455113620/"
           githubUrl="https://github.com/Ransomwave/mad-carousel"
+          description="The host will call out a number: be the first to gather up enough people in a room, or you're out! Features many round modifiers to keep things interesting."
         />
         <GameCard
           title="Steal a SOUL"
           link="https://www.roblox.com/games/127603676641718/"
-          description='Game inspired by "Steal a Brainrot", where you have to Steal a Deltarune or Undertale character.'
+          description='Game inspired by "Steal a Brainrot", where you collect Deltarune characters or steal them from other players.'
         />
       </div>
     </>
