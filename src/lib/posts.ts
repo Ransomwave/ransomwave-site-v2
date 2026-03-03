@@ -1,9 +1,8 @@
 import fs from "fs";
 import path from "path";
-import matter from "gray-matter";
+import { compileMDX } from "next-mdx-remote/rsc";
 
 const postsDirectory = path.join(process.cwd(), "src", "content", "blog");
-console.log("Posts directory:", postsDirectory);
 
 interface BlogPostMeta {
   slug: string;
@@ -13,25 +12,31 @@ interface BlogPostMeta {
   thumbnailUrl?: string;
 }
 
-export function getAllPosts() {
+export async function getAllPosts() {
   if (!fs.existsSync(postsDirectory)) {
     return [];
   }
 
   const fileNames = fs.readdirSync(postsDirectory);
 
-  const posts = fileNames.map<BlogPostMeta>((file) => {
-    const slug = file.replace(/\.mdx$/, "");
-    const fullPath = path.join(postsDirectory, file);
-    const content = fs.readFileSync(fullPath, "utf8");
+  const posts = await Promise.all(
+    fileNames.map(async (file): Promise<BlogPostMeta> => {
+      const slug = file.replace(/\.mdx$/, "");
+      const fullPath = path.join(postsDirectory, file);
+      const source = fs.readFileSync(fullPath, "utf8");
+      const { frontmatter } = await compileMDX<Omit<BlogPostMeta, "slug">>({
+        source,
+        options: {
+          parseFrontmatter: true,
+        },
+      });
 
-    const { data } = matter(content);
-
-    return {
-      slug,
-      ...data,
-    };
-  });
+      return {
+        slug,
+        ...frontmatter,
+      };
+    }),
+  );
 
   // Sort newest first; undated posts go last
   return posts.sort((a, b) => {

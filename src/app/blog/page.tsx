@@ -8,8 +8,8 @@ export const metadata: Metadata = {
     "Welcome to my blog! Read about my latest updates, dev insights, projects, and more!",
 };
 
-export default function BlogIndex() {
-  const blogPosts = getAllPosts();
+export default async function BlogIndex() {
+  const blogPosts = await getAllPosts();
 
   return (
     <div className="text-center">

@@ -1,4 +1,13 @@
 import type { NextConfig } from "next";
+import createMDX from "@next/mdx";
+
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+  // options: {
+  //   remarkPlugins: [],
+  //   rehypePlugins: [],
+  // },
+});
 
 const nextConfig: NextConfig = {
   images: {
@@ -68,4 +77,4 @@ const nextConfig: NextConfig = {
   pageExtensions: ["js", "ts", "jsx", "tsx", "md", "mdx"],
 };
 
-export default nextConfig;
+export default withMDX(nextConfig);
