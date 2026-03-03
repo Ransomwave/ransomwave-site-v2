@@ -1,0 +1,160 @@
+---
+title: "I made Azul, because we deserve better than Rojo"
+date: "2026-03-03"
+description: "I always wanted to use Rojo, but it never really worked for me. So I made my own tool, and it's pretty good if I do say so myself."
+thumbnailUrl: "/images/projects/azul-logo.png"
+---
+
+I now mostly make my Roblox games using a tool I built myself, called Azul.
+
+It's a sync tool between your PC and Roblox Studio. It basically allows you to edit your game files using your favorite code editor, and have the changes reflected in Studio in real-time.
+
+# But... why?
+
+Explaining why Azul exists is actually a bit of a mouthful to explain, but I'll try my best!
+
+# A bit of history
+
+Roblox Studio's editor is decent. Not perfect. But years of polish have made it good. Really good. Roblox has had many years to polish and refine the experience, and what they have now is a very solid code editor that supports all most features you'd expect from a modern IDE, and it's extensible with some amazing plugins that can speed up your workflow a lot.
+
+In 2017, things were a lot different. Roblox was finally starting to become a serious game development platform, and many developers were starting to treat it as such. However, Roblox Studio was still very much a "game maker" tool. The built-in code editor was very basic, and it lacked many features that more advanced developers were used to in other code editors.
+
+These frustrations led a smart few to a novel idea:
+
+> "What if we could ditch the built-in code editor, and edit our game files with whatever we wanted?"
+
+This is how many early "sync tools" were born: [RbxSync](https://github.com/evaera/RbxSync), [RbxRefresh](https://github.com/osyrisrblx/RbxRefresh/), [CodeSync](https://github.com/MemoryPenguin/CodeSync)...
+
+These tools worked by watching your local files for changes, and then sending those changes to Roblox Studio. This allowed developers to use their favorite code editors, and have the changes reflected in Studio in real-time.
+
+However, a lot of these tools were very rough around the edges. They were often buggy, and they didn't always work as expected.
+
+This all changed with the release of LPGhatguy's [Rojo](https://rojo.space). The creator had a very clear vision for what he wanted to achieve and, alongside a team of very talented contributors, he made it a reality. Rojo was a very polished tool that worked as expected, and it quickly became the de-facto sync tool for Roblox projects, developing into its own ecosystem of packages and plugins.
+
+...But today isn't 2017. Roblox Studio, developers and even Rojo itself have changed.
+
+# How Rojo works
+
+In principle, Rojo is a very simple tool.
+
+It watches your local files for changes, and then it updates a special "project file" that Roblox Studio can read. This project file tells Studio how to map your local files to the game's hierarchy. For example, if you have a folder called `📂 server`, you can tell Rojo to map all scripts in that folder to `ServerScriptService`.
+
+In an ideal world, this would be ideal. Your filesystem is your source of truth, and Roblox Studio is just a dumb client that reflects the state of your files. However, in practice, this design has some glaring limitations.
+
+# What's wrong with Rojo?
+
+If you ever used Roblox Studio, you might have noticed that it has some glaring differences from traditional files and folders. Objects like `Parts`, `Models`, `Meshes`... They aren't files, they're objects in a hierarchy. They have properties, they can be nested inside each other.
+
+How does Rojo handle this? It makes you manually write down the structure of your game in the project file. If you want to create a new Part, you have to edit the `default.project.json`, and then tell Rojo where to put it in the hierarchy.
+
+```javascript
+// Example: Adding a new Part called "CoolPart" to the Workspace
+"Workspace": {
+  "$className": "Workspace",
+  "MyNewPart": {
+    "$className": "Part",
+    "$properties": {
+      "Name": "CoolPart",
+      "Anchored": true,
+      "Size": [4, 1, 4],
+      "Position": [0, 10, 0],
+      "Color": [255, 0, 0]
+    }
+  }
+}
+```
+
+This is a very tedious and error-prone process. It also means that you can't use Rojo to edit your game in Studio, because any changes you make in Studio won't be reflected in your files.
+
+This is slightly alleviated if you choose to use something called "partially managed" Rojo, which makes Rojo only manage scripts in specific folders rathar than the whole project. However, this doesn't alleviate it from what I like to call "poisoned folders".
+
+<ImageGrid columns={2}>
+
+![A "normal" folder with nothing but Folders and Scripts](/blog-content/azul/normal-folder.png)
+
+![A "poisoned" folder; we introduced one BoolValue](/blog-content/azul/poisoned-folder.png)
+
+</ImageGrid>
+
+If you want Rojo to properly manage the "poisoned" folder, you'll have to either add it to the project file, create a `.meta.json` for the Folder, or move the BoolValue out of the folder altogether.
+
+```javascript
+// server/TestFolder/Folder/boolvalue.meta.json
+{
+  "className": "BoolValue",
+  "properties": {
+    "Value": true
+  }
+}
+```
+
+This is a very silly example, but you can see how this can quickly become a nightmare to manage, especially with datatypes more complex than just a `true`/`false` value.
+
+## Existing projects?
+
+Support for using existing projects is non-existant.
+
+Really. You just can't.
+
+The [only tool](ttps://github.com/rojo-rbx/rbxlx-to-rojo) that allowed you to use existing projects with Rojo [hasn't been maintained in 5 years](https://github.com/rojo-rbx/rbxlx-to-rojo/commits/master). It's 6th anniversary is this May!
+
+# The "sync" part
+
+In reality, Rojo isn't really a "sync" tool, is it?
+
+While Rojo likely started as a sync tool, it's evolved into what they call a "build tool", which means that its goal is to generate Roblox games from your filesystem. Rojo isn't trying to be a companion to Roblox Studio, it's trying to replace it.
+
+This explains many of the design decisions that make Rojo a burden to use for people that don't want to replace Studio. We're just not the target audience, and that's fine! But the issue is that many developers in the community still act like Rojo is a sync tool, recommending it for "editing your scripts with your IDE", which is just not what Rojo is.
+
+The ability to edit your game in Studio, and have those changes reflected in your files is a feature that the Rojo team [barely support](https://github.com/rojo-rbx/rojo/issues/164).
+
+_(Fun fact: [My PR of rbxlx-to-rojo](https://github.com/rojo-rbx/rbxlx-to-rojo/pull/97) is one of the only ways to still use it!)_
+
+# The market for Rojo alternatives
+
+Unsurprisingly, I'm not the first person to complain about Rojo.
+
+In the past few years, there have been a few attempts at making Rojo alternatives. The problem, is that Rojo is a very hard act to follow. It's a very polished tool that works as expected, with a tight ecosystem and a large userbase. Any alternative would have to be significantly improve upon Rojo, work with the years of Rojo projects that are already out there, and not completely alienate everyone else.
+
+The most notable alternatives are "Argon" & Roblox's official "Script Sync". Both of these tools are very good, and they have their own unique features that set them apart from Rojo. However, they're either too similar to Rojo (not letting go of project files, burden to use with existing projects), or lack features that Rojo has (no Package Manager support, no importing from filesystem).
+
+# Azul
+
+So, after all this, I decided to make my own tool, Azul (pun on Rojo intended).
+
+I wanted a tool that just worked, that didn't require me to change the way I worked, that worked with my existing projects, and that didn't require me to manage any project/meta files.
+
+This is how Azul was born.
+
+![The Azul logo](/images/projects/azul-logo-200px.png)
+
+Initially, Azul was supposed to be a "sourcemap builder", a patch on top of Roblox's Script Sync that let you get autocomplete support for your local files in Studio. However, it grew into a full-blown sync tool.
+
+It's one-click to start, it just works, it's fast, and it supports all the features I wanted.
+
+## What I fixed
+
+- **Studio is the source of truth**: Azul is very clear about the fact that Studio is the source of truth, and your filesystem is just a reflection of that. You can edit your game in Studio, and have those changes reflected in your files. You can also edit your files, and have those changes reflected in Studio. It just works.
+- **No more project files**: It's just one command to start Azul, and it just works. No more writing JSON files, no more managing meta files, no more worrying about the structure of your project, it just works.
+- **Support for existing projects**: Just point Azul to your existing project folder, and it will sync all the files in that folder to Studio. No more "importing" your project, no more "partially managed" folders, it just works.
+- **No more "poisoned" folders**: You can have any type of object in your folders, because state isn't managed in your filesystem. Have Scripts inside tools, inside models, inside anything! It just works.
+- **Confusing conventions**: I always believed the `init.luau` convention was very obtuse, because your Script's name and location no longer corresponds to its location in Studio... so I got rid of it. Azul represents nested scripts with nested folders, so you retain 1:1 parity between your filesystem and your game hierarchy. It just works!
+
+## What I took from Rojo
+
+- **Backwards compatibility**: Azul maintains compatibility with existing Rojo projects, so it just works with your favorite Rojo projects.
+- **Package Manager support**: Azul lets you use Wally, pesde or any other package manager to manage your dependencies, and it will sync them to Studio properly.
+- **Filesystem -> Studio**: Azul still supports the workflow of pushing projects from your filesystem to Studio, so it can still be used as a build tool if that's what you want. Turns out build tools aren't evil!
+- **Reproductible builds**: Azul lets you generate reproducible builds of your game in a few commands, just like Rojo. It just works!
+
+# Closing thoughts
+
+My goal with this project was to make something that I wanted to use, and I think I succeeded. Azul is a tool that I use every day to make my games, and it has significantly improved my workflow. It's not perfect, and it still has some rough edges, but it's a tool that I enjoy using, and that's all that matters to me.
+
+However, I also hope that Azul can be a catalyst for change in the Roblox development community. I hope that it can inspire other developers to think outside the box, to challenge the status quo, and to create tools that are better suited for their needs.
+
+Rojo is a great tool, but it's not the only tool, and we deserve better than just one option.
+
+![](/blog-content/azul/azul-snippet.png)
+
+If you're interested in checking out Azul, you can find it on [GitHub](https://github.com/Ransomwave/azul), and let me know what you think!
