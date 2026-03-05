@@ -115,6 +115,20 @@ export async function generateMetadata({
     description:
       frontmatter.description ??
       "Read the latest blog post from Ransomwave's Games.",
+    openGraph: {
+      title: `${frontmatter.title ?? "Blog Post"} - Blog`,
+      url: `https://ransomwave.com/blog/${slug}`,
+      description:
+        frontmatter.description ??
+        "Read the latest blog post from Ransomwave's Games.",
+      images: frontmatter.thumbnailUrl
+        ? [
+            {
+              url: frontmatter.thumbnailUrl,
+            },
+          ]
+        : undefined,
+    },
   };
 }
 

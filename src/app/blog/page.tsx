@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   title: "Blog - Ransomwave's Games",
   description:
     "Welcome to my blog! Read about my latest updates, dev insights, projects, and more!",
+  openGraph: {
+    title: "Blog - Ransomwave's Games",
+    url: "https://ransomwave.com/blog",
+    description:
+      "Welcome to my blog! Read about my latest updates, dev insights, projects, and more!",
+  },
 };
 
 export default async function BlogIndex() {

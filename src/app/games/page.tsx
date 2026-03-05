@@ -5,6 +5,12 @@ export const metadata: Metadata = {
   title: "My Games",
   description:
     "A collection of all my published Roblox games. Click on a game to play!",
+  openGraph: {
+    title: "My Games - Ransomwave's Games",
+    url: "https://ransomwave.com/games",
+    description:
+      "A collection of all my published Roblox games. Click on a game to play!",
+  },
 };
 
 export default function Games() {

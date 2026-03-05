@@ -5,6 +5,12 @@ export const metadata: Metadata = {
   title: "Other Projects - Ransomwave's Games",
   description:
     "A collection of my software projects, including open-source repositories and web applications.",
+  openGraph: {
+    title: "Other Projects - Ransomwave's Games",
+    url: "https://ransomwave.com/other-projects",
+    description:
+      "A collection of my software projects, including open-source repositories and web applications.",
+  },
 };
 
 export default function OtherProjectsPage() {
