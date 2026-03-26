@@ -1,0 +1,189 @@
+---
+title: "A case against init.luau"
+date: "2026-03-25"
+description: "Why I think the init.luau pattern is a bad idea, and the solution under our noses."
+thumbnailUrl: ""
+---
+
+On January 23rd of 2025, Roblox introduced a small but significant change to how Luau is able to "import" code (Modules). Mainly, it finally allowed for a more traditional way of "importing" code, through what they called "require-by-string".
+
+```lua
+-- The old way
+local MyModule = require(script.Parent.MyModule)
+
+-- The new way
+local MyModule = require("../MyModule")
+-- Note how it's not "../MyModule.luau", the new syntax automatically takes care of the file extension.
+```
+
+_For those not familiar with Luau, the `require` function is how you import code from other files. Importing code is useful for a variety of reasons, such as code organization, reusability, and separation of concerns._
+
+The idea behind this change was to unify how code is imported in Luau. Historically, Roblox used `require(Instance)` (e.g., `require(script.Parent.Module)`), while standalone Luau used strings. This created a massive "compatibility gap". You couldn't copy-paste a Luau library from GitHub into Roblox without rewriting every single `require` statement.
+
+It also ironed out many other language issues with the standalone Luau implementation of `require`. For example, previously `require` was relative to your current working directory (directory you ran the script from), which meant you were literally unable reliably to use libraries.
+
+# But...
+
+If I were to leave you here, you'd think this was a total victory for the community. We got familiar syntax, better compatibility and more robust rules for the language.
+
+But if you spend even 10 seconds scrolling through [the announcement post](https://devforum.roblox.com/t/introducing-require-by-string/3405078), you'll see the reality was much messier.
+
+One of the lead maintainers of Rojo, Dekkonot, was a very vocal critic of how a specific part of this change initially worked. Reading his replies is very interesting, but there's something that stood out to me. Perhaps unintentionally, he proved my point about the main point of this blog post: why I dislike the `init.luau` pattern.
+
+# init.luau, why?
+
+Understanding why `init.luau` exists requires a bit of a history lesson about Roblox, the filesystem, and sync tools. If you're interested, I dive deeper into this in a [previous blog post](http://ransomwave.games/blog/azul), but the TL;DR is:
+
+- Roblox was never designed to work with a traditional filesystem
+- Developers wanted to use traditional software development tools (e.g., Git, VSCode, etc.) to work on Roblox projects
+- Sync tools (e.g., Rojo) were created to bridge the gap between Roblox and the traditional filesystem
+
+This leads us to the main problem. Roblox can nest objects inside each other, but filesystems can't. And since Scripts are objects, this creates a problem:
+
+```
+In Roblox, this is perfectly valid:
+- 📜 FooModule
+  - 📜 BarModule
+
+But, in a filesystem...
+- 📜 FooModule.luau
+- 📜 BarModule.luau
+```
+
+We cannot put `BarModule.luau` inside `FooModule.luau` since they're files, not directories. So, the Rojo maintainers came up with a simple hack: the `init.luau` pattern. If you want to nest any sort of code inside each other, you can create a folder for the parent, and put an `init.luau` file inside it. This file will be the "entry point", and it can require other files inside the same folder.
+
+For example, the structure:
+
+```
+- 📜 FooModule
+  - 📜 BarModule
+```
+
+Gets represented as:
+
+```
+- 📂 FooModule
+  - 📜 init.luau
+  - 📜 BarModule.luau
+```
+
+The code in the previously-mentioned `FooModule` is now contained inside `init.luau`.
+
+# The problem with init.luau
+
+Initially, you'd say this is a pretty good solution. It's a common pattern in other languages, and it does technically solve the problem of nesting code inside each other... but it's not.
+
+## It's confusing
+
+If we're going through the effort of setting up a sync tool to use Git, this pattern is just confusing.
+
+In big projects, it will be common to have nested structures. How many times will you find yourself looking for a specific "`init.luau`"? Or... Was it even called `init.luau`? Maybe it was a descendant, who knows!?
+
+By design, the pattern forces you to look for both files and directories instead of individual Scripts.
+
+## It creates The Tab Hell
+
+Imagine you have 5 files open in your favorite IDE... And they're all called `init.luau`. How do you know which one is which? You have to hover over each tab to see the file path, and even then, it's super frustrating to manually distinguish between them.
+
+## It creates a structural lie
+
+Maybe it's just me, but when using a sync tool with Roblox I want the filesystem to closely represent what I'll get on Roblox. It just makes it much more intuitive to navigate and understand.
+
+With init files, you lie to yourself:
+
+- In the filesystem, `FooModule` is a directory with a sibling `init.luau`.
+- In Roblox, `FooModule` is a Script with a child `BarModule`.
+
+## It's a refactoring nightmare
+
+The init pattern forces you to choose early on if you ever intend your code to have descendants. If you start with a simple `FooModule.luau` and later realize you need to nest `BarModule` inside it, you have to refactor `FooModule.luau` into `init.luau` and move all the code around.
+
+To avoid this, you might as well make everything an `init.luau` from the start... But then, what's the point of even supporting standalone files? Leave way to the `init.luau` revolution, I guess.
+
+## It's misused (on Roblox)
+
+Depending on what other languages you've used, you might have a preconceived notion of what `init` files are for. If you've ever done anything in Python, you may argue that `__init__.py` presents the perfect analogy to `init.luau`.
+
+But the Python `__init__.py` comparison is a trap. In Python, an init file is a gatekeeper; it marks a directory as a package and stays out of the way. You rarely live inside that file.
+
+In the Roblox community, we've turned the gatekeeper into the landlord. Because init.luau is the Script, it holds all the primary logic. We aren't just 'initializing a package'; we are writing our entire systems inside a file that claims to be a folder. If `init.luau` were only used for Wally packages or library entry points, I'd have no beef with it. But when your entire codebase is a nesting doll of init files, the abstraction tower collapses.
+
+# Require-by-string, part 2
+
+I hope you agree with me until this point because, if you do, this next part will make you scream at Roblox (or at least at the technical debt we've collectively allowed to pile up).
+
+So, coming back to the require-by-string change, there were specific parts of the implementation that made everyone unhappy.
+
+- **Sibling vs. Child**: Roblox accounted for `init.luau` in a way that mimicked Python. If you required a directory, it looked for an init "entry point," and files alongside it remained siblings. But since sync tools "fold" those siblings into the init file to create a parent-child relationship in Studio, the expectation of how paths should work was completely broken.
+- **The "Up and Back Down" Tax**: There was no clean way for a script to refer to its own children via strings. You were forced to write verbose paths like `require("./CurrentScript/Submodule")` just to find a child sitting right there. It was counter-intuitive compared to the elegance of the old script.Child syntax.
+- **Case Sensitivity**: Filesystems (especially on Windows) are often case-insensitive, while Roblox's DataModel is strictly case-sensitive. This led to "it works on my machine" bugs where code worked locally in VS Code but failed the moment it was shared with a Linux or macOS user
+
+So, after all the backlash, Roblox finally gave into the pressure and "fixed" these issues.
+
+## The surrender
+
+On December 5th, 2025, a Luau RFC was merged that effectively signaled a total surrender to the status quo.
+
+[The RFC](https://rfcs.luau.org/abstract-module-paths-and-init-dot-luau.html) didn't just acknowledge the community's favorite hack, but it codified it into the language's core resolution logic. To solve the "Sibling vs. Child" paradox, Roblox introduced a new built-in alias: `@self`.
+
+Think about the weight of that for a second. We reached a point where a third-party sync tool, created by the community to fix a filesystem limitation, became so dominant that it forced the official language maintainers to modify the standard just to handle its quirks.
+
+It really feels like we didn't get the `@self` alias because it was an elegant addition to the Luau language, we got it because the ecosystem didn't want to deal with the consequences of its own mapping hack.
+
+By walking back and changing Luau (the general-purpose language) to accommodate a pattern primarily used to sync back to Studio, they left us with this admission:
+
+> "On a filesystem, Rojo's behaviour is frankly very weird!"
+>
+> — Luau RFC, Abstract module paths and init.luau
+
+They took a survival tactic born out of necessity and engraved it into Luau as a permanent architectural scar.
+
+# The solution under our noses
+
+The irony of this entire situation is how avoidable it could've been if someone, somewhere, realized that init files were never the solution to the nesting problem in the first place.
+
+## A lesson from Rust
+
+Rust is a relatively modern language known for making waves in the programming community. It's designed with a focus on safety, performance, and concurrency. If there's anybody you should be getting inspired by, it's Rust.
+
+Before 2018, Rust modules had a similar pattern to Roblox's init. If you wanted a module with submodules, you had to create a directory with a `mod.rs` file inside it. This `mod.rs` acted as the entry point for the module, and you would put your submodules in the same directory. For example:
+
+```
+- 📂 src
+    📜 main.rs
+    📂 network
+        📜 mod.rs
+        📜 bar.rs
+```
+
+Remind you of anything? The `mod.rs` file is basically the `init.luau` of Rust. It was just as common as the `init.luau` in Roblox, but it was often a common pain-point for the community. It was confusing, it created tab hell, and it was a refactoring nightmare.
+
+So, in 2018, Rust [introduced a new module system](https://doc.rust-lang.org/edition-guide/rust-2018/path-changes.html#no-more-modrs) that completely removed the need for `mod.rs`. Now, you can simply create a directory for your module and put your submodules inside it without needing an entry point file. For example:
+
+```
+- 📂 src
+    📜 main.rs
+    📜 network.rs
+    📂 network
+        📜 bar.rs
+```
+
+In this new system, `network.rs` is its standalone file. You're not editing a file that only gets its context from the directory above it. You're editing a file that is its own module, and it can be easily extended with submodules without needing to refactor anything.
+
+## How I implemented it
+
+I am lucky enough to get to have a say on things like these thanks to the fact that I maintain Azul, which I'd consider is my heavily-opinionated alternative to Rojo.
+
+While Azul isn't nearly as big as Rojo, it still has a decent userbase _(if 70 stars on GitHub are anything to go by!)_ and it's used in some pretty big projects, so these changes still have a small impact on a small side of the community.
+
+When implementing how Azul syncs modules from and to Roblox, I wanted to be honest. By adopting the Rust-style Peer Pattern, I eliminated the 'Identity Crisis' entirely. Each file exists as its own module, and if it needs children, you simply give it a sibling folder with the same name. No refactoring, no moving code into an init file, and most importantly, no lying to the filesystem. It's a system where `require('./Child')` actually points to a child, both on your disk and in the engine.
+
+I've been using this system for a while now, and I can confidently say that I've been much more happier with it than I ever was with the init pattern. It's much more intuitive, it's easier to navigate, and it doesn't create any of the problems that the init pattern does.
+
+# Conclusion
+
+The `init.luau` pattern was a well-intentioned solution, but it introduces structural ambiguity that we shouldn't accept anymore. It created more problems than it solved, and it forced the community to adopt a confusing and frustrating way of organizing code.
+
+The fact that Roblox had to change the language itself to accommodate this pattern is a testament to just how deeply ingrained it became in the community.
+
+However, there are better ways to organize code that don't involve creating a structural lie or a refactoring nightmare. We just need to look at how other languages have solved this problem and learn from their mistakes.
