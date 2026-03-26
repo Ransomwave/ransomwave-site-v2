@@ -172,11 +172,11 @@ In this new system, `network.rs` is its standalone file. You're not editing a fi
 
 ## How I implemented it
 
-I am lucky enough to get to have a say on things like these thanks to the fact that I maintain Azul, which I'd consider is my heavily-opinionated alternative to Rojo.
+I am lucky enough to get to have a say on things like these thanks to the fact that I maintain [Azul](https://github.com/Ransomwave/azul), which I'd consider is my heavily-opinionated alternative to Rojo.
 
 While Azul isn't nearly as big as Rojo, it still has a decent userbase _(if 70 stars on GitHub are anything to go by!)_ and it's used in some pretty big projects, so these changes still have a small impact on a small side of the community.
 
-When implementing how Azul syncs modules from and to Roblox, I wanted to be honest. By adopting the Rust-style Peer Pattern, I eliminated the 'Identity Crisis' entirely. Each file exists as its own module, and if it needs children, you simply give it a sibling folder with the same name. No refactoring, no moving code into an init file, and most importantly, no lying to the filesystem. It's a system where `require('./Child')` actually points to a child, both on your disk and in the engine.
+When implementing how Azul syncs modules from and to Roblox, I wanted to be honest. By adopting the Rust-style Peer Pattern, I eliminated the "identity crisis" entirely. Each file exists as its own module, and if it needs children, you simply give it a sibling folder with the same name. No refactoring, no moving code into an init file, and most importantly, no lying to the filesystem. It's a system where `require('./Parent/Child')` actually points to a child, both on your disk and in the engine.
 
 I've been using this system for a while now, and I can confidently say that I've been much more happier with it than I ever was with the init pattern. It's much more intuitive, it's easier to navigate, and it doesn't create any of the problems that the init pattern does.
 
