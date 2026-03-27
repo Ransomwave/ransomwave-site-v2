@@ -28,7 +28,9 @@ If I were to leave you here, you'd think this was a total victory for the commun
 
 But if you spend even 10 seconds scrolling through [the announcement post](https://devforum.roblox.com/t/introducing-require-by-string/3405078), you'll see the reality was much messier.
 
-One of the lead maintainers of Rojo, Dekkonot, was a very vocal critic of how a specific part of this change initially worked. Reading his replies is very interesting, but there's something that stood out to me. Perhaps unintentionally, he proved my point about the main point of this blog post: why I dislike the `init.luau` pattern.
+One of the lead maintainers of Rojo, Dekkonot, was a very vocal critic of how a specific part of this change initially worked. Considering his position as a maintainer of a tool that favors this pattern, reading his feedback is very insightful. That said, there's something that stood out to me. Perhaps unintentionally, his criticism, valid as it was, illustrates exactly why the init pattern creates these knock-on problems.
+
+But before we get into that, let's talk about `init.luau`.
 
 # init.luau, why?
 
@@ -106,41 +108,42 @@ Depending on what other languages you've used, you might have a preconceived not
 
 But the Python `__init__.py` comparison is a trap. In Python, an init file is a gatekeeper; it marks a directory as a package and stays out of the way. You rarely live inside that file.
 
-In the Roblox community, we've turned the gatekeeper into the landlord. Because init.luau is the Script, it holds all the primary logic. We aren't just 'initializing a package'; we are writing our entire systems inside a file that claims to be a folder. If `init.luau` were only used for Wally packages or library entry points, I'd have no beef with it. But when your entire codebase is a nesting doll of init files, the abstraction tower collapses.
+In the Roblox community, we've turned the gatekeeper into the landlord. Because init.luau is the Script, it holds all the primary logic. We aren't just 'initializing a package'; we are writing our entire systems inside a file that claims to be a folder.
+
+If `init.luau` were only used for packages or library entry points, I'd have no beef with it. But when your entire codebase is a nesting doll of init files, the abstraction tower collapses.
 
 # Require-by-string, part 2
 
-I hope you agree with me until this point because, if you do, this next part will make you scream at Roblox (or at least at the technical debt we've collectively allowed to pile up).
+So, coming back to the require-by-string change, I want to highlight these specific issues which made most people unhappy with the initial implementation:
 
-So, coming back to the require-by-string change, there were specific parts of the implementation that made everyone unhappy.
+- **Sibling vs. Child**: Roblox accounted for init files in a way that mimicked Python, driving away from the existing pattern.
+- **The "Up and Back Down" Tax**: Since the new syntax didn't respect the existing init pattern, it also inherently provided a worse experience for accessing children. You had to go up a directory and then back down to access children, which many argued was a regression to the familiar `script.Child` syntax.
 
-- **Sibling vs. Child**: Roblox accounted for `init.luau` in a way that mimicked Python. If you required a directory, it looked for an init "entry point," and files alongside it remained siblings. But since sync tools "fold" those siblings into the init file to create a parent-child relationship in Studio, the expectation of how paths should work was completely broken.
-- **The "Up and Back Down" Tax**: There was no clean way for a script to refer to its own children via strings. You were forced to write verbose paths like `require("./CurrentScript/Submodule")` just to find a child sitting right there. It was counter-intuitive compared to the elegance of the old script.Child syntax.
-- **Case Sensitivity**: Filesystems (especially on Windows) are often case-insensitive, while Roblox's DataModel is strictly case-sensitive. This led to "it works on my machine" bugs where code worked locally in VS Code but failed the moment it was shared with a Linux or macOS user
+And I feel like this is where things get interesting. Remember when I mentioned Dekkonot's initial criticism at the start of this article? It was technically correct, the developer experience was genuinely clunky.
 
-So, after all the backlash, Roblox finally gave into the pressure and "fixed" these issues.
+But why was it clunky?
+
+Because Roblox tried to follow the same rules as Python, Node.js, and almost every other major ecosystem. The "standard" behavior became unusable not because Roblox got it wrong, but because `init.luau` in its current form is a structural lie that the standard was never built to accommodate.
 
 ## The surrender
 
 On December 5th, 2025, a Luau RFC was merged that effectively signaled a total surrender to the status quo.
 
-[The RFC](https://rfcs.luau.org/abstract-module-paths-and-init-dot-luau.html) didn't just acknowledge the community's favorite hack, but it codified it into the language's core resolution logic. To solve the "Sibling vs. Child" paradox, Roblox introduced a new built-in alias: `@self`.
+[The RFC](https://rfcs.luau.org/abstract-module-paths-and-init-dot-luau.html) didn't just acknowledge the community's favorite hack, but it codified it into the language's core resolution logic.
 
-Think about the weight of that for a second. We reached a point where a third-party sync tool, created by the community to fix a filesystem limitation, became so dominant that it forced the official language maintainers to modify the standard just to handle its quirks.
+Luau changed how relative requires resolve within an `init.luau` file: instead of resolving relative to the script itself, they now resolve relative to the parent folder the init file represents. luau. Then, the `@self` alias was a separate addition to handle the resulting side effect (since `require('./foo')` inside `package/init.luau` now pulls in the outer foo, you need `require('@self/foo')` to reach `package/foo`).
 
-It really feels like we didn't get the `@self` alias because it was an elegant addition to the Luau language, we got it because the ecosystem didn't want to deal with the consequences of its own mapping hack.
+Think about the weight of that for a second. A third-party sync tool, created by the community to fix a filesystem limitation, became so dominant that the official language maintainers had to first rewire path resolution, and then add new syntax, just to handle its quirks.
 
-By walking back and changing Luau (the general-purpose language) to accommodate a pattern primarily used to sync back to Studio, they left us with this admission:
+When walking back and changing Luau (the general-purpose language) to accommodate a pattern primarily used to sync back to Studio, the RFC left us with this great admission:
 
 > "On a filesystem, Rojo's behaviour is frankly very weird!"
 >
 > — Luau RFC, Abstract module paths and init.luau
 
-They took a survival tactic born out of necessity and engraved it into Luau as a permanent architectural scar.
-
 # The solution under our noses
 
-The irony of this entire situation is how avoidable it could've been if someone, somewhere, realized that init files were never the solution to the nesting problem in the first place.
+The irony of this entire situation is how avoidable it could've been. Really, the solution is not only robust, but it also doesn't forbid for init files to still exist.
 
 ## A lesson from Rust
 
@@ -150,10 +153,10 @@ Before 2018, Rust modules had a similar pattern to Roblox's init. If you wanted 
 
 ```
 - 📂 src
-    📜 main.rs
-    📂 network
-        📜 mod.rs
-        📜 bar.rs
+  - 📜 main.rs
+  - 📂 network
+      - 📜 mod.rs
+      - 📜 bar.rs
 ```
 
 Remind you of anything? The `mod.rs` file is basically the `init.luau` of Rust. It was just as common as the `init.luau` in Roblox, but it was often a common pain-point for the community. It was confusing, it created tab hell, and it was a refactoring nightmare.
@@ -162,10 +165,10 @@ So, in 2018, Rust [introduced a new module system](https://doc.rust-lang.org/edi
 
 ```
 - 📂 src
-    📜 main.rs
-    📜 network.rs
-    📂 network
-        📜 bar.rs
+  - 📜 main.rs
+  - 📜 network.rs
+  - 📂 network
+      - 📜 bar.rs
 ```
 
 In this new system, `network.rs` is its standalone file. You're not editing a file that only gets its context from the directory above it. You're editing a file that is its own module, and it can be easily extended with submodules without needing to refactor anything.
