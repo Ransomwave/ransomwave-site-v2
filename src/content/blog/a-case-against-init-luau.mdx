@@ -131,7 +131,7 @@ On December 5th, 2025, a Luau RFC was merged that effectively signaled a total s
 
 [The RFC](https://rfcs.luau.org/abstract-module-paths-and-init-dot-luau.html) didn't just acknowledge the community's favorite hack, but it codified it into the language's core resolution logic.
 
-Luau changed how relative requires resolve within an `init.luau` file: instead of resolving relative to the script itself, they now resolve relative to the parent folder the init file represents. luau. Then, the `@self` alias was a separate addition to handle the resulting side effect (since `require('./foo')` inside `package/init.luau` now pulls in the outer foo, you need `require('@self/foo')` to reach `package/foo`).
+Luau changed how relative requires resolve within an `init.luau` file: instead of resolving relative to the script itself, they now resolve relative to the parent folder the init file represents. Then, the `@self` alias was a separate addition to handle the resulting side effect (since `require('./foo')` inside `package/init.luau` now pulls in the outer foo, you need `require('@self/foo')` to reach `package/foo`).
 
 Think about the weight of that for a second. A third-party sync tool, created by the community to fix a filesystem limitation, became so dominant that the official language maintainers had to first rewire path resolution, and then add new syntax, just to handle its quirks.
 
