@@ -110,7 +110,7 @@ But the Python `__init__.py` comparison is a trap. In Python, an init file is a 
 
 In the Roblox community, we've turned the gatekeeper into the landlord. Because init.luau is the Script, it holds all the primary logic. We aren't just 'initializing a package'; we are writing our entire systems inside a file that claims to be a folder.
 
-If `init.luau` were only used for packages or library entry points, I'd have no beef with it. But when your entire codebase is a nesting doll of init files, the abstraction tower collapses.
+If `init.luau` were only used for packages or library entry points, I'd be more content with it. But when the pattern encourages the entire codebase to become a nesting doll of init files, the abstraction tower collapses.
 
 # Require-by-string, part 2
 
@@ -129,13 +129,46 @@ Because Roblox tried to follow the same rules as Python, Node.js, and almost eve
 
 On December 5th, 2025, a Luau RFC was merged that effectively signaled a total surrender to the status quo.
 
-[The RFC](https://rfcs.luau.org/abstract-module-paths-and-init-dot-luau.html) didn't just acknowledge the community's favorite hack, but it codified it into the language's core resolution logic.
+[The RFC](https://rfcs.luau.org/abstract-module-paths-and-init-dot-luau.html) not only acknowledged the community's favorite hack, but it codified it into the language's core resolution logic and added the `@self` alias to patch the hole that change created.
 
-Luau changed how relative requires resolve within an `init.luau` file: instead of resolving relative to the script itself, they now resolve relative to the parent folder the init file represents. Then, the `@self` alias was a separate addition to handle the resulting side effect (since `require('./foo')` inside `package/init.luau` now pulls in the outer foo, you need `require('@self/foo')` to reach `package/foo`).
+Why is this a bad thing? Because it introduces a special case the RFC itself admits needs guardrails.
 
-Think about the weight of that for a second. A third-party sync tool, created by the community to fix a filesystem limitation, became so dominant that the official language maintainers had to first rewire path resolution, and then add new syntax, just to handle its quirks.
+### Renaming
 
-When walking back and changing Luau (the general-purpose language) to accommodate a pattern primarily used to sync back to Studio, the RFC left us with this great admission:
+If you rename a file to or from `init.luau`, you have to rewrite every single `require()` in it, because the resolution rules change based purely on the filename. That's a fragile system. A file's name shouldn't determine how its paths are interpreted.
+
+### @self
+
+I did briefly gloss over the addition of `@self` before, but what is it?
+
+It's essentially a special sort of alias. If you've ever worked in Node.js, you may be familiar with the `@` symbol being used to denote package scopes (e.g., `@angular/core` or `@my-org/my-tool`). It gives you a very nice way to import from a specific location without needing to use complex relative paths. (e.g., instead of importing from `"../../../somewhere/something"`, you import from `"@lib/something"`).
+
+In this case, `@self` is a special alias that points to the current module's directory. So, if you're inside an `init.luau` file and you want to require a sibling file, you have to use `require('@self/sibling')` instead of just `require('./sibling')`. Why? Because the resolution rules changed based on the filename, and now `require('./sibling')` would resolve to the sibling of the parent directory instead of the sibling of the current file.
+
+Take for example the following structure:
+
+```
+- 📂 FooModule
+  - 📜 init.luau
+  - 📜 BarModule.luau <- Sibling of the init file
+- 📜 BarModule.luau <- Sibling of the parent directory
+```
+
+Previously, you could just do `require('./BarModule')` inside `init.luau` to access the `BarModule` next to it (its sibling), because the resolution rules were consistent. But now, you have to do `require('@self/BarModule')` to access the sibling, and `require('./BarModule')` would actually access the `BarModule` that's a sibling of the parent directory.
+
+They've introduced a special case into path resolution, and then introduced new syntax to escape that special case. That's two layers of complexity added over one hack!
+
+### Different files, different rules
+
+The implications of this RFC is that now Luau has two different types of modules. One that follows the "standard" resolution rules, and one that follows the "init" resolution rules.
+
+This double standard is not only confusing, but it also creates a weird inconsistency in the language. You have to be aware of which type of module you're in to know how to write your `require` statements.
+
+### The bigger picture
+
+Think about the weight of this for a second. A third-party sync tool, created by the community to fix a filesystem limitation, became so dominant that the official language maintainers had to first rewire path resolution, and then add new syntax, just to handle its quirks.
+
+When walking back and changing Luau (the general-purpose language) to accommodate this, the RFC left us with this great admission:
 
 > "On a filesystem, Rojo's behaviour is frankly very weird!"
 >
@@ -147,7 +180,7 @@ The irony of this entire situation is how avoidable it could've been. Really, th
 
 ## A lesson from Rust
 
-Rust is a relatively modern language known for making waves in the programming community. It's designed with a focus on safety, performance, and concurrency. If there's anybody you should be getting inspired by, it's Rust.
+Rust is a relatively modern language known for making waves in the programming space. It's designed with a focus on safety, performance, and concurrency. If there's anybody you should be getting inspired by, it's Rust.
 
 Before 2018, Rust modules had a similar pattern to Roblox's init. If you wanted a module with submodules, you had to create a directory with a `mod.rs` file inside it. This `mod.rs` acted as the entry point for the module, and you would put your submodules in the same directory. For example:
 
@@ -175,17 +208,17 @@ In this new system, `network.rs` is its standalone file. You're not editing a fi
 
 ## How I implemented it
 
-I am lucky enough to get to have a say on things like these thanks to the fact that I maintain [Azul](https://github.com/Ransomwave/azul), which I'd consider is my heavily-opinionated alternative to Rojo.
+I am lucky enough to get some influence on things like these thanks to the fact that I maintain [Azul](https://github.com/Ransomwave/azul), which I'd consider is my heavily-opinionated alternative to Rojo. (I wrote [an article](https://ransomwave.games/blog/azul) about it, if you're up to learning more)
 
-While Azul isn't nearly as big as Rojo, it still has a decent userbase _(if 70 stars on GitHub are anything to go by!)_ and it's used in some pretty big projects, so these changes still have a small impact on a small side of the community.
+While Azul isn't nearly as big as Rojo, it still has a decent userbase _(if 70 stars on GitHub are anything to go by!)_ and it's used in some pretty big projects, so these changes still have an impact on a small side of the community.
 
-When implementing how Azul syncs modules from and to Roblox, I wanted to be honest. By adopting the Rust-style Peer Pattern, I eliminated the "identity crisis" entirely. Each file exists as its own module, and if it needs children, you simply give it a sibling folder with the same name. No refactoring, no moving code into an init file, and most importantly, no lying to the filesystem. It's a system where `require('./Parent/Child')` actually points to a child, both on your disk and in the engine.
+When implementing how Azul syncs modules from and to Roblox, I wanted to be honest. By adopting the Rust-style Peer Pattern, I eliminated I got rid of the init problems entirely. Each file exists as its own module, and if it needs children, you simply give it a sibling folder with the same name. No refactoring, no moving code into an init file, and most importantly, no lying to the filesystem. It's a system where `require('./Parent/Child')` actually points to a child, both on your disk and in the engine.
 
-I've been using this system for a while now, and I can confidently say that I've been much more happier with it than I ever was with the init pattern. It's much more intuitive, it's easier to navigate, and it doesn't create any of the problems that the init pattern does.
+Azul has been using this system for a while now, and I can confidently say that I've been much more happier with it than I ever was with the init pattern. It's much more intuitive, it's easier to navigate, and it doesn't create any of the problems that the init pattern does.
 
 # Conclusion
 
-The `init.luau` pattern was a well-intentioned solution, but it introduces structural ambiguity that we shouldn't accept anymore. It created more problems than it solved, and it forced the community to adopt a confusing and frustrating way of organizing code.
+The `init.luau` pattern was a well-intentioned solution that came from necessity, but it introduces structural ambiguity that we shouldn't accept anymore. It created more problems than it solved, and it forced the community to adopt a confusing and frustrating way of organizing code.
 
 The fact that Roblox had to change the language itself to accommodate this pattern is a testament to just how deeply ingrained it became in the community.
 
