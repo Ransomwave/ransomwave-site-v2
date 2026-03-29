@@ -108,9 +108,9 @@ Depending on what other languages you've used, you might have a preconceived not
 
 But the Python `__init__.py` comparison is a trap. In Python, an init file is a gatekeeper; it marks a directory as a package and stays out of the way. You rarely live inside that file.
 
-In the Roblox community, we've turned the gatekeeper into the landlord. Because init.luau is the Script, it holds all the primary logic. We aren't just 'initializing a package'; we are writing our entire systems inside a file that claims to be a folder.
+However, in Roblox, we've turned the gatekeeper into the landlord. It's not uncommon to see `init.luau` files holding all the primary logic. Rather than just "initializing a package", we are writing our entire systems inside a file that claims to be a folder.
 
-If `init.luau` were only used for packages or library entry points, I'd be more content with it. But when the pattern encourages the entire codebase to become a nesting doll of init files, the abstraction tower collapses.
+If init files were only used for packages or library entry points, I'd be more content with it. But when the pattern encourages the entire codebase to become a nesting doll of init files, the abstraction tower collapses.
 
 # Require-by-string, part 2
 
@@ -121,9 +121,9 @@ So, coming back to the require-by-string change, I want to highlight these speci
 
 And I feel like this is where things get interesting. Remember when I mentioned Dekkonot's initial criticism at the start of this article? It was technically correct, the developer experience was genuinely clunky.
 
-But why was it clunky?
+But why was it?
 
-Because Roblox tried to follow the same rules as Python, Node.js, and almost every other major ecosystem. The "standard" behavior became unusable not because Roblox got it wrong, but because `init.luau` in its current form is a structural lie that the standard was never built to accommodate.
+Roblox tried to follow the same rules as Python, Node.js, and almost every other major ecosystem. The "standard" behavior became unusable not because Roblox got it wrong, but because `init.luau` in its current form is a mess the standard was never built to accommodate.
 
 ## The surrender
 
@@ -131,7 +131,7 @@ On December 5th, 2025, a Luau RFC was merged that effectively signaled a total s
 
 [The RFC](https://rfcs.luau.org/abstract-module-paths-and-init-dot-luau.html) not only acknowledged the community's favorite hack, but it codified it into the language's core resolution logic and added the `@self` alias to patch the hole that change created.
 
-Why is this a bad thing? Because it introduces a special case the RFC itself admits needs guardrails.
+Why is this a bad thing? Because it introduces many caveats, it's a "feature" the RFC itself admits needs guardrails.
 
 ### Renaming
 
@@ -162,7 +162,9 @@ They've introduced a special case into path resolution, and then introduced new 
 
 The implications of this RFC is that now Luau has two different types of modules. One that follows the "standard" resolution rules, and one that follows the "init" resolution rules.
 
-This double standard is not only confusing, but it also creates a weird inconsistency in the language. You have to be aware of which type of module you're in to know how to write your `require` statements.
+This double standard is not only confusing, but it also creates a weird inconsistency in the language. You have to be aware of which type of module you're in at all times to know how it behaves with the files around it.
+
+For any new developer coming into the ecosystem, this is a nightmare.
 
 ### The bigger picture
 
