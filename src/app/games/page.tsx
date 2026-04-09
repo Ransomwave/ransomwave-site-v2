@@ -70,6 +70,11 @@ export default function Games() {
       </p>
       <div className="flex flex-row items-stretch flex-wrap justify-center mt-4 gap-4">
         <GameCard
+          title="Mobility Scooter Obby"
+          link="https://www.roblox.com/games/75704687309291"
+          description="You've been given a mobility scooter. You WILL use it to complete the obby. - I did programming and some design for this game."
+        />
+        <GameCard
           title="MAD CAROUSEL"
           link="https://www.roblox.com/games/70527455113620/"
           githubUrl="https://github.com/Ransomwave/mad-carousel"

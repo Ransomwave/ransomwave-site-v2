@@ -65,6 +65,13 @@ export default function OtherProjectsPage() {
         />
 
         <ProjectCard
+          title="BetterChassis"
+          description="BetterChassis is a batteries-included fork of 'A-Chassis' with a focus on modularity & extensibility. It comes with mobile support built-in, as well as a Sound plugin."
+          technologies={["Luau"]}
+          githubUrl="https://github.com/Ransomwave/BetterChassis"
+        />
+
+        <ProjectCard
           title="Bacon Man (Bot)"
           description="Bacon Man is a Discord bot built using Nextcord that provides various features including game stats retrieval, starboard functionality, attachment limit enforcement, & more. I created this bot to manage my own Discord server."
           technologies={["Python", "Discord.py", "Nextcord"]}
