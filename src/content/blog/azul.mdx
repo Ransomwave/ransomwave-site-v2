@@ -15,7 +15,7 @@ Explaining why Azul exists is actually a bit of a mouthful to explain, but I'll 
 
 # A bit of history
 
-Roblox Studio's editor is decent. Not perfect. But years of polish have made it good. Really good. Roblox has had many years to polish and refine the experience, and what they have now is a very solid code editor that supports all most features you'd expect from a modern IDE, and it's extensible with some amazing plugins that can speed up your workflow a lot.
+Today, Roblox Studio's editor is decent. Roblox has had many years to polish and refine the experience, and what they have now is a very solid code editor that supports all most features you'd expect from a modern IDE, and it's extensible with some amazing plugins that can speed up your workflow a lot.
 
 In 2017, things were a lot different. Roblox was finally starting to become a serious game development platform, and many developers were starting to treat it as such. However, Roblox Studio was still very much a "game maker" tool. The built-in code editor was very basic, and it lacked many features that more advanced developers were used to in other code editors.
 
@@ -66,7 +66,15 @@ How does Rojo handle this? It makes you manually write down the structure of you
 
 This is a very tedious and error-prone process. It also means that you can't use Rojo to edit your game in Studio, because any changes you make in Studio won't be reflected in your files.
 
-This is slightly alleviated if you choose to use something called "partially managed" Rojo, which makes Rojo only manage scripts in specific folders rathar than the whole project. However, this doesn't alleviate it from what I like to call "poisoned folders".
+## Partially Managed Rojo
+
+This is slightly alleviated if you choose to use something called "partially managed" Rojo. Essentially, you can tell Rojo to only manage specific folders in your project, which means you can still manage some parts of your project in Studio, and only specific parts with Rojo.
+
+However, this leaves you in an akward middle-ground where your filesystem has a "blind spot" for anything that isn't "managed". You're giving up the ability for the filesystem to dictate what your project is, meaning you have to manage your project in two places: the filesystem, and Studio.
+
+This is a middle-ground many people choose to live in, but it can be a nightmare to manage.
+
+Partially managed Rojo doesn't solve a problem I like to call "poisoned folders":
 
 <ImageGrid columns={2}>
 
@@ -108,7 +116,7 @@ While Rojo likely started as a sync tool, it's evolved into what they call a "bu
 
 This explains many of the design decisions that make Rojo a burden to use for people that don't want to replace Studio. We're just not the target audience, and that's fine! But the issue is that many developers in the community still act like Rojo is a sync tool, recommending it for "editing your scripts with your IDE", which is just not what Rojo is.
 
-The ability to edit your game in Studio, and have those changes reflected in your files is a feature that the Rojo team [barely support](https://github.com/rojo-rbx/rojo/issues/164).
+The ability to edit your game in Studio, and have those changes reflected in your files is a feature Rojo [barely supports](https://github.com/rojo-rbx/rojo/issues/164).
 
 # The market for Rojo alternatives
 
@@ -116,11 +124,25 @@ Unsurprisingly, I'm not the first person to complain about Rojo.
 
 In the past few years, there have been a few attempts at making Rojo alternatives. The problem, is that Rojo is a very hard act to follow. It's a very polished tool that works as expected, with a tight ecosystem and a large userbase. Any alternative would have to be significantly improve upon Rojo, work with the years of Rojo projects that are already out there, and not completely alienate everyone else.
 
-The most notable alternatives are "Argon" & Roblox's official "Script Sync". Both of these tools are very good, and they have their own unique features that set them apart from Rojo. However, they're either too similar to Rojo (not letting go of project files, burden to use with existing projects), or lack features that Rojo has (no Package Manager support, no importing from filesystem).
+## Roblox Studio's Script Sync
+
+Roblox's official "Script Sync" is a very recent addition to Roblox Studio, and it's a very good tool. It allows you to edit your scripts in your favorite code editor, and have those changes reflected in Studio in real-time.
+
+The issue is that it's very barebones. It's just a simple mirroring tool which you mostly set up manually (by right clicking a Script or Folder). While this is a good start and it works, it lacks many features that Rojo has, such as Package Manager support, or the ability to import existing projects from your filesystem.
+
+## Argon
+
+Argon is a very interesting tool because it feels like a spiritual successor to Rojo.
+
+If Rojo is the "Classic" way to build, Argon is the "Updated" way. It handles complex tasks like built-in Wally integration and attribute syncing much better than Rojo ever did.
+
+But there's a catch. Despite all its polish, Argon is still fundamentally a build tool at its core. It still relies on the `*.project.json` manifest. It still requires you to map out your hierarchy in a configuration file if you want to do anything beyond the basics.
+
+While Argon makes the "Rojo way" much faster and more pleasant, it doesn't solve the core issue for developers who just want to sync.
 
 # Azul
 
-So, after all this, I decided to make my own tool, Azul (pun on Rojo intended).
+So, seeing no one alternative, I decided to make my own tool, Azul! (pun on Rojo intended)
 
 I wanted a tool that just worked, that didn't require me to change the way I worked, that worked with my existing projects, and that didn't require me to manage any project/meta files.
 
@@ -134,22 +156,22 @@ It's one-click to start, it just works, it's fast, and it supports all the featu
 
 ## What I fixed
 
-- **Studio is the source of truth**: Azul is very clear about the fact that Studio is the source of truth, and your filesystem is just a reflection of that. You can edit your game in Studio, and have those changes reflected in your files. You can also edit your files, and have those changes reflected in Studio. It just works.
-- **No more project files**: It's just one command to start Azul, and it just works. No more writing JSON files, no more managing meta files, no more worrying about the structure of your project, it just works.
-- **Support for existing projects**: Just point Azul to your existing project folder, and it will sync all the files in that folder to Studio. No more "importing" your project, no more "partially managed" folders, it just works.
-- **No more "poisoned" folders**: You can have any type of object in your folders, because state isn't managed in your filesystem. Have Scripts inside tools, inside models, inside anything! It just works.
-- **Confusing conventions**: I always believed the `init.luau` convention was very obtuse, because your Script's name and location no longer corresponds to its location in Studio... so I got rid of it. Azul represents nested scripts with nested folders, so you retain 1:1 parity between your filesystem and your game hierarchy. It just works!
+- **Studio is the source of truth**: Azul is very clear about the fact that Studio is the source of truth, and your filesystem is just a reflection of that. You can edit your game in Studio, and have those changes reflected in your files. You can also edit your files, and have those changes reflected in Studio.
+- **No more project files**: It's just one command to start Azul, and it just works. No more writing JSON files, no more managing meta files, no more worrying about the structure of your project.
+- **Support for existing projects**: Just point Azul to your existing project folder, and it will sync all the files in that folder to Studio. No more "importing" your project, no more "partially managed" folders.
+- **No more "poisoned" folders**: You can have any type of object in your folders, because state isn't managed in your filesystem. Have Scripts inside tools, inside models, inside anything!
+- **Confusing conventions**: I always believed the `init.luau` convention was very obtuse, because your Script's name and location no longer corresponds to its location in Studio, so I got rid of it. _I actually made a lengthier post about this topic, if it piques your interest: [A case against `init.luau`](https://ransomwave.games/blog/a-case-against-init-luau)_
 
 ## What I took from Rojo
 
-- **Backwards compatibility**: Azul maintains compatibility with existing Rojo projects, so it just works with your favorite Rojo projects.
+- **Backwards compatibility**: Azul has a compatibility layer for existing Rojo projects, so it can import your favorite Rojo projects and libraries just fine.
 - **Package Manager support**: Azul lets you use Wally, pesde or any other package manager to manage your dependencies, and it will sync them to Studio properly.
 - **Filesystem -> Studio**: Azul still supports the workflow of pushing projects from your filesystem to Studio, so it can still be used as a build tool if that's what you want. Turns out build tools aren't evil!
-- **Reproductible builds**: Azul lets you generate reproducible builds of your game in a few commands, just like Rojo. It just works!
+- **Reproductible builds**: Azul lets you generate reproducible builds of your game in a few commands, just like Rojo.
 
 # Closing thoughts
 
-My goal with this project was to make something that I wanted to use, and I think I succeeded. Azul is a tool that I use every day to make my games, and it has significantly improved my workflow. It's not perfect, and it still has some rough edges, but it's a tool that I enjoy using, and that's all that matters to me.
+My goal with this project was to make something that I wanted to use, and I think I succeeded. Azul is the tool I use every day to make my games, and it has significantly improved my workflow. It's not perfect, and it still has some rough edges, but it's a tool that I enjoy using, and that's all that matters to me.
 
 However, I also hope that Azul can be a catalyst for change in the Roblox development community. I hope that it can inspire other developers to think outside the box, to challenge the status quo, and to create tools that are better suited for their needs.
 
