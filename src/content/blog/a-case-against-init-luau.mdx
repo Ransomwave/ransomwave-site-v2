@@ -142,7 +142,7 @@ To drive this point home, let's see some real-world uses of `init.luau` in a rea
  │   │   │   │   ├── Connected.lua
  │   │   │   │   ├── Connecting.lua
  │   │   │   │   ├── Error.lua
- │   │   │   │   ├── init.lua
++│   │   │   │   ├── init.lua
  │   │   │   │   └── NotConnected.lua
  │   │   │   ├── bindingUtil.lua
  │   │   │   ├── getTextBoundsAsync.lua
@@ -190,11 +190,13 @@ Unless we were to open the files and read through them, we have no idea what the
 
 I don't think I need to explain what happens when you have multiple files with the same name open in your IDE.
 
-Here, you're stripped of the context `init.luau` delegates to the directory.
+The tabs strip you of the context `init.luau` delegates to the directory.
 
-Which `init.luau` is which? You have to hover over each tab to see the file path, and even then, it's super frustrating to manually distinguish between them.
+In the previous example codebase, there are more than _twelve_ files named `init.lua`. If you have more than a few of them open, it becomes extremely frustrating to keep track of which is which.
 
-> As an aside, I'm aware that there are certain settings in popular IDEs like VSCode that can help mitigate this issue. But the fact remains: _this is a workaround_. Fundamentally, the problem isn't solved, which is why I will be ignoring these settings for the sake of this discussion.
+You have to manually distinguish them by hovering over the tab to see the file path, or look at the contents of the file itself.
+
+> As an aside, I'm aware that there are certain settings in popular IDEs like VSCode that can help mitigate this issue by naming the tab based on the parent directory. But the fact remains: _this is a workaround_. Fundamentally, the problem isn't solved, which is why I will be ignoring these settings for the sake of this discussion.
 
 ## It creates a structural lie
 
