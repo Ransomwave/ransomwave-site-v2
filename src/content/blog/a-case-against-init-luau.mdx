@@ -71,25 +71,134 @@ Gets represented as:
 
 The code in the previously-mentioned `FooModule` is now contained inside `init.luau`.
 
-# The problem with init.luau
+# The problems of init.luau
 
-Initially, you'd say this is a pretty good solution. It's a common pattern in other languages, and it does technically solve the problem of nesting code inside each other... but it's not.
+Initially, this seems like a pretty clever solution. It allows us to represent nested structures in a filesystem.
 
-## It's confusing
+However, once you become familiar with it in day-to-day use, you realize the glaring downsides of this pattern.
 
-If we're going through the effort of setting up a sync tool to use Git, this pattern is just confusing.
+## You lose context
 
-In big projects, it will be common to have nested structures. How many times will you find yourself looking for a specific "`init.luau`"? Or... Was it even called `init.luau`? Maybe it was a descendant, who knows!?
+The main problem with the pattern is that you lose context. When asking yourself what a file does, `init.luau` tells you too look elsewhere.
 
-By design, the pattern forces you to look for both files and directories instead of individual Scripts.
+### Naming
 
-## It creates The Tab Hell
+Naming files is as important as naming your variables and functions. A good name should be descriptive and intuitive. `init.luau` is neither of those. It doesn't tell you anything about what the file does, it just tells you that it's an entry point.
 
-Imagine you have 5 files open in your favorite IDE... And they're all called `init.luau`. How do you know which one is which? You have to hover over each tab to see the file path, and even then, it's super frustrating to manually distinguish between them.
+In big Roblox projects, it's common and expected to have deeply nested structures. The init pattern makes managing these structures a nightmare.
+
+```diff
++ init.luau
++ class/init.luau
++ class/types/init.luau
+- character/init.luau
+- services/init.luau
+```
+
+To drive this point home, let's see some real-world uses of `init.luau` in a real project:
+
+```diff
+ ├── plugin/
+ │   ├── http/
+ │   │   ├── Error.lua
++│   │   ├── init.lua
+ │   │   ├── init.spec.lua
+ │   │   └── Response.lua
+ │   ├── log/
++│   │   ├── init.lua
+ │   │   └── init.spec.lua
+ │   ├── src/
+ │   │   ├── App/
+ │   │   │   ├── Components/
+ │   │   │   │   ├── Notifications/
+ │   │   │   │   │   ├── FullscreenNotification.lua
++│   │   │   │   │   ├── init.lua
+ │   │   │   │   │   └── Notification.lua
+ │   │   │   │   ├── PatchVisualizer/
+ │   │   │   │   │   ├── ChangeList.lua
+ │   │   │   │   │   ├── DisplayValue.lua
+ │   │   │   │   │   ├── DomLabel.lua
++│   │   │   │   │   └── init.lua
+ │   │   │   │   ├── StringDiffVisualizer/
++│   │   │   │   │   ├── init.lua
+ │   │   │   │   │   └── StringDiff.lua
+ │   │   │   │   ├── Studio/
+ │   │   │   │   │   ├── StudioPluginAction.lua
+ │   │   │   │   │   ├── StudioPluginContext.lua
+ │   │   │   │   │   └── [...]
+ │   │   │   │   ├── TableDiffVisualizer/
+ │   │   │   │   │   ├── Array.lua
+ │   │   │   │   │   ├── Dictionary.lua
++│   │   │   │   │   └── init.lua
+ │   │   │   │   ├── BorderedContainer.lua
+ │   │   │   │   ├── Checkbox.lua
+ │   │   │   │   ├── ClassIcon.lua
+ │   │   │   │   ├── [...]
+ │   │   │   ├── StatusPages/
+ │   │   │   │   ├── Settings/
++│   │   │   │   │   ├── init.lua
+ │   │   │   │   │   └── Setting.lua
+ │   │   │   │   ├── Confirming.lua
+ │   │   │   │   ├── Connected.lua
+ │   │   │   │   ├── Connecting.lua
+ │   │   │   │   ├── Error.lua
+ │   │   │   │   ├── init.lua
+ │   │   │   │   └── NotConnected.lua
+ │   │   │   ├── bindingUtil.lua
+ │   │   │   ├── getTextBoundsAsync.lua
++│   │   │   ├── init.lua
+ │   │   │   ├── [...]
+ │   │   ├── ChangeBatcher/
+ │   │   │   ├── createPatchSet.lua
+ │   │   │   ├── createPatchSet.spec.lua
+ │   │   │   ├── encodePatchUpdate.lua
+ │   │   │   ├── encodePatchUpdate.spec.lua
+ │   │   │   ├── encodeProperty.lua
++│   │   │   ├── init.lua
+ │   │   │   └── init.spec.lua
+ │   │   ├── Reconciler/
+ │   │   │   ├── applyPatch.lua
+ │   │   │   ├── applyPatch.spec.lua
+ │   │   │   ├── decodeValue.lua
+ │   │   │   ├── diff.lua
+ │   │   │   ├── diff.spec.lua
++│   │   │   ├── init.lua
+ │   │   │   ├── [...]
+ │   │   ├── [...]
+ │   ├── run-tests.server.lua
+ │   ├── test-place.project.json
+ │   └── [...]
+```
+
+_(This is the codebase for the Rojo plugin, which otherwise is a pretty well-maintained and organized codebase.)_
+
+I want you to take a moment and scroll through this file tree. For every init file you see, I want you to ask yourself:
+
+- What does this file do?
+- Why is it here?
+- How does it relate to the files around it?
+
+For a few the answers are obvious. For instance, `http/init.lua` must handle something related to HTTP requests.
+
+But for most of them, we just plain don't know.
+
+For instance, what does `StatusPages/init.lua` do? Does it handle the logic for all the status pages? Does it export utilities? Does it export the pages themselves?
+
+Unless we were to open the files and read through them, we have no idea what they do. And that's a problem!
+
+### It creates The Tab Hell
+
+I don't think I need to explain what happens when you have multiple files with the same name open in your IDE.
+
+Here, you're stripped of the context `init.luau` delegates to the directory.
+
+Which `init.luau` is which? You have to hover over each tab to see the file path, and even then, it's super frustrating to manually distinguish between them.
+
+> As an aside, I'm aware that there are certain settings in popular IDEs like VSCode that can help mitigate this issue. But the fact remains: _this is a workaround_. Fundamentally, the problem isn't solved, which is why I will be ignoring these settings for the sake of this discussion.
 
 ## It creates a structural lie
 
-Maybe it's just me, but when using a sync tool with Roblox I want the filesystem to closely represent what I'll get on Roblox. It just makes it much more intuitive to navigate and understand.
+When using a sync tool with Roblox, I want the filesystem to closely represent what I'll get on Roblox. It just makes it much more intuitive to navigate and understand.
 
 With init files, you lie to yourself:
 
@@ -98,7 +207,7 @@ With init files, you lie to yourself:
 
 ## It's a refactoring nightmare
 
-The init pattern forces you to choose early on if you ever intend your code to have descendants. If you start with a simple `FooModule.luau` and later realize you need to nest `BarModule` inside it, you have to refactor `FooModule.luau` into `init.luau` and move all the code around.
+The pattern forces you to choose early on if you ever intend your code to have descendants. If you start with a simple `FooModule.luau` and later realize you need to nest `BarModule` inside it, you have to refactor `FooModule.luau` into `init.luau` and move all the code around.
 
 To avoid this, you might as well make everything an `init.luau` from the start... But then, what's the point of even supporting standalone files? Leave way to the `init.luau` revolution, I guess.
 
@@ -108,7 +217,7 @@ Depending on what other languages you've used, you might have a preconceived not
 
 But the Python `__init__.py` comparison is a trap. In Python, an init file is a gatekeeper; it marks a directory as a package and stays out of the way. You rarely live inside that file.
 
-However, in Roblox, we've turned the gatekeeper into the landlord. It's not uncommon to see `init.luau` files holding all the primary logic. Rather than just "initializing a package", we are writing our entire systems inside a file that claims to be a folder.
+On Roblox, we've turned the gatekeeper into the landlord. It's not uncommon to see `init.luau` files holding all the primary logic. Rather than just "initializing a package", we are writing our entire systems inside a file that claims to be a folder.
 
 If init files were only used for packages or library entry points, I'd be more content with it. But when the pattern encourages the entire codebase to become a nesting doll of init files, the abstraction tower collapses.
 
@@ -168,9 +277,9 @@ For any new developer coming into the ecosystem, this is a nightmare.
 
 ### The bigger picture
 
-Think about the weight of this for a second. A third-party sync tool, created by the community to fix a filesystem limitation, became so dominant that the official language maintainers had to first rewire path resolution, and then add new syntax, just to handle its quirks.
+Regardless of how anybody feels about the init pattern, the fact is that it's too late to change it now. I respect Roblox's initial attempt to create a more sound solution, but the fact that they had to backpedal, add new syntax, and accommodate the language to 3rd-party tool conventions is a testament to just how deeply ingrained it has become.
 
-When walking back and changing Luau (the general-purpose language) to accommodate this, the RFC left us with this great admission:
+When walking back Luau, the RFC left us with this great admission:
 
 > "On a filesystem, Rojo's behaviour is frankly very weird!"
 >
@@ -212,16 +321,14 @@ In this new system, `network.rs` is its standalone file. You're not editing a fi
 
 I am lucky enough to get some influence on things like these thanks to the fact that I maintain [Azul](https://github.com/Ransomwave/azul), which I'd consider is my heavily-opinionated alternative to Rojo. (I wrote [an article](https://ransomwave.games/blog/azul) about it, if you're up to learning more)
 
-While Azul isn't nearly as big as Rojo, it still has a decent userbase _(if 70 stars on GitHub are anything to go by!)_ and it's used in some pretty big projects, so these changes still have an impact on a small side of the community.
+While Azul isn't nearly as big as Rojo, it still has a decent userbase and it's used in some pretty big projects, so these changes still have an impact on a small chunk of the community.
 
-When implementing how Azul syncs modules from and to Roblox, I wanted to be honest. By adopting the Rust-style Peer Pattern, I eliminated I got rid of the init problems entirely. Each file exists as its own module, and if it needs children, you simply give it a sibling folder with the same name. No refactoring, no moving code into an init file, and most importantly, no lying to the filesystem. It's a system where `require('./Parent/Child')` actually points to a child, both on your disk and in the engine.
+When implementing how Azul syncs from and to Roblox, I wanted to be honest. Each file exists on its own, and if it needs children, you simply make it a sibling folder with the same name. No refactoring, no moving code into an init file, and most importantly, no lying to the filesystem. It's a system where `require('./Parent/Child')` actually points to a child, both on your disk and in the engine.
 
-Azul has been using this system for a while now, and I can confidently say that I've been much more happier with it than I ever was with the init pattern. It's much more intuitive, it's easier to navigate, and it doesn't create any of the problems that the init pattern does.
+Azul has been using this system for a while now, and I can confidently say that I've personally been much more happier with it. It's much more intuitive, it's easier to navigate, and it doesn't create any of the problems that the init pattern does.
 
 # Conclusion
 
-The `init.luau` pattern was a well-intentioned solution that came from necessity, but it introduces structural ambiguity that we shouldn't accept anymore. It created more problems than it solved, and it forced the community to adopt a confusing and frustrating way of organizing code.
+The `init.luau` pattern was a well-intentioned solution that came from necessity, but it introduces structural ambiguity that we shouldn't accept anymore. It creates more problems than it solves, and it forces the community to adopt a confusing and frustrating way of organizing code.
 
-The fact that Roblox had to change the language itself to accommodate this pattern is a testament to just how deeply ingrained it became in the community.
-
-However, there are better ways to organize code that don't involve creating a structural lie or a refactoring nightmare. We just need to look at how other languages have solved this problem and learn from their mistakes.
+There are better ways to organize code. We just need to look at how other languages have solved this problem and learn from their mistakes.
