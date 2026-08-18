@@ -87,9 +87,9 @@ The main appeal of Lua's `init.lua` is that it allows you to create a clear entr
 
 This is fine for libraries and other systems where you understand the trade-off between context and organization, which is how it works in the Lua world.
 
-In Roblox, however, `init.luau` is used for everything. It's not just for libraries, it's for any Script that has children, which exacerbates the tiny context loss from the original Lua pattern. The liberal nature of Roblox's DataModel, which encourages nesting objects inside each other, means that the `init.luau` pattern becomes a default for most projects.
+In Roblox, however, `init.luau` is criminally overused. It's not just for libraries, it's for any Script that has children, which exacerbates the tiny context loss from the original Lua pattern. The liberal nature of Roblox's DataModel, which encourages nesting objects inside each other, means that the `init.luau` pattern becomes a default for most projects.
 
-This frequent context loss is frustrating. When asking yourself what a file does, `init.luau` tells you too look elsewhere.
+This frequent context loss is often very frustrating. When asking yourself what a file does, `init.luau` tells you too look elsewhere.
 
 ### Naming
 
@@ -182,9 +182,7 @@ To drive this point home, let's see some real-world uses of `init.luau` in a rea
  │   └── [...]
 ```
 
-_(This is the codebase for the Rojo plugin, which otherwise is a pretty well-maintained and organized codebase.)_
-
-_(Yes, these files are technically called `init.lua`. For brevity's sake, I will refer to them as `init.luau` in this discussion. Understand, however, that they are identical in function for Roblox projects.)_
+_(This is the codebase for the Rojo plugin, which is a pretty well-maintained and organized codebase.)_
 
 I want you to take a moment and scroll through this file tree. For every init file you see, I want you to ask yourself:
 
@@ -194,21 +192,15 @@ I want you to take a moment and scroll through this file tree. For every init fi
 
 For a few the answers are obvious. For instance, `http/init.lua` must handle something related to HTTP requests.
 
-But for most of them, we just plain don't know.
+But most? `StatusPages/init.lua`, `ChangeBatcher/init.lua`, `Reconciler/init.lua`. No idea, not without opening them.
 
-For instance, what does `StatusPages/init.lua` do? Does it handle the logic for all the status pages? Does it export utilities? Does it export the pages themselves?
+### The Tab Hell
 
-Unless we were to open the files and read through them, we have no idea what they do. And that's a problem!
+Opening multiple init files in your IDE is a nightmare. The tabs strip you of the context `init.luau` delegates to the directory.
 
-### It creates The Tab Hell
+In the previous example codebase, there are more than _twelve_ files named `init.lua`. If you have more than a few of them open (you will, because most of them are the main logic, with the siblings being utilities), it becomes extremely frustrating to keep track of which is which.
 
-I don't think I need to explain what happens when you have multiple files with the same name open in your IDE.
-
-The tabs strip you of the context `init.luau` delegates to the directory.
-
-In the previous example codebase, there are more than _twelve_ files named `init.lua`. If you have more than a few of them open, it becomes extremely frustrating to keep track of which is which.
-
-You have to manually distinguish them by hovering over the tab to see the file path, or look at the contents of the file itself.
+You have to manually distinguish them by looking over at the contents of the file itself.
 
 > As an aside, I'm aware that there are certain settings in popular IDEs like VSCode that can help mitigate this issue by naming the tab based on the parent directory. But the fact remains: _this is a workaround_. Fundamentally, the problem isn't solved, which is why I will be ignoring these settings for the sake of this discussion.
 
@@ -216,7 +208,7 @@ You have to manually distinguish them by hovering over the tab to see the file p
 
 When using a sync tool with Roblox, I want the filesystem to closely represent what I'll get on Roblox. It just makes it much more intuitive to navigate and understand.
 
-With init files, you lie to yourself:
+With init files, it is not intuitive:
 
 - In the filesystem, `FooModule` is a directory with a sibling `init.luau`.
 - In Roblox, `FooModule` is a Script with a child `BarModule`.
@@ -229,13 +221,13 @@ To avoid this, you might as well make everything an `init.luau` from the start..
 
 ## It's misused (on Roblox)
 
-I think this is my biggest gripe with this pattern. As I mentioned before, the original Lua pattern is not inherently bad. It has its use cases, and it can be a good way to organize code in certain scenarios.
+I think this is my biggest gripe with this pattern. As I mentioned before, the original Lua pattern is not inherently bad or evil. It has its use cases, and they can be an elegant solution to certain scenarios.
 
 Depending on what other languages you've used, you might have a preconceived notion of what `init` files are for. If you've ever done anything in Python, you may argue that `__init__.py` presents the perfect analogy to `init.luau`.
 
-But the Python `__init__.py` comparison is a trap. In Python, an init file is a gatekeeper; it marks a directory as a package and stays out of the way. You rarely live inside that file.
+But the Python `__init__.py` comparison is a trap. In Python, an init file is a gatekeeper - it marks a directory as a package and stays out of the way. You'll rarely find yourself inside that file, let alone multiple of them.
 
-On Roblox, we've turned the gatekeeper into the landlord. It's not uncommon to see `init.luau` files holding all the primary logic. Rather than just "initializing a package", we are writing our entire systems inside a file that claims to be a folder.
+But, on Roblox, we've turned the gatekeeper into the landlord. It's not uncommon to see `init.luau` files holding all the primary logic. Rather than just "initializing a package", we are writing our entire systems inside a file that claims to be a folder.
 
 Init files should only be used to denote entry points for libraries. And even then, they should be used with caution. But when the status quo encourages you to turn your entire codebase to become a nesting doll of init files, the abstraction tower collapses.
 
@@ -343,10 +335,4 @@ I also made the tough decision to not support `init.luau` at all. While Rust's p
 
 # The bottom line
 
-Maybe I come across as a bit harsh in this article, so I do want to make it clear that I don't entirely hate the init pattern. The small context loss from the original Lua pattern is still not ideal, but it's not nearly as illegible as how many modern Roblox codebases look thanks to it.
-
-It's just not the correct solution to display aggressive nesting, which is something that Roblox encourages with its DataModel.
-
-The `init.luau` pattern was a well-intentioned solution that came from necessity, but it introduces frustration and structural ambiguity we shouldn't accept anymore. It forces the community to adopt a confusing and frustrating way of organizing code.
-
-There are better ways to organize code, especially for a platform like Roblox.
+The real issue isn't the `init.luau` pattern itself, but how it's used in the Roblox ecosystem. It's just not the correct solution to display aggressive nesting, which is something that Roblox encourages with its DataModel.
