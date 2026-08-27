@@ -9,13 +9,11 @@ I now mostly make my Roblox games using a tool I built myself, called Azul.
 
 It's a sync tool between your PC and Roblox Studio. It basically allows you to edit your game files using your favorite code editor, and have the changes reflected in Studio in real-time.
 
-# But... why?
-
-Explaining why Azul exists is actually a bit of a mouthful to explain, but I'll try my best!
+But... Why does Azul exist? Why not just use Rojo, the most popular tool? Well, in this article I want to explain why I made Azul, and why I think it's a better tool than Rojo.
 
 # A bit of history
 
-Today, Roblox Studio's editor is decent. Roblox has had many years to polish and refine the experience, and what they have now is a very solid code editor that supports all most features you'd expect from a modern IDE, and it's extensible with some amazing plugins that can speed up your workflow a lot.
+Today, Roblox Studio's editor is decent. Roblox has had many years to polish and refine the experience, and what they have now is a very solid code editor that supports most features you'd expect from a modern IDE, and it's extensible with some amazing plugins that can speed up your workflow a lot.
 
 In 2017, things were a lot different. Roblox was finally starting to become a serious game development platform, and many developers were starting to treat it as such. However, Roblox Studio was still very much a "game maker" tool. The built-in code editor was very basic, and it lacked many features that more advanced developers were used to in other code editors.
 
@@ -37,40 +35,63 @@ This all changed with the release of LPGhatguy's [Rojo](https://rojo.space). The
 
 In principle, Rojo is a very simple tool.
 
-It watches your local files for changes, and then it updates a special "project file" that Roblox Studio can read. This project file tells Studio how to map your local files to the game's hierarchy. For example, if you have a folder called `📂 server`, you can tell Rojo to map all scripts in that folder to `ServerScriptService`.
+It watches your local files for changes, and then it updates the state of your Roblox Studio to match.
 
-In an ideal world, this would be ideal. Your filesystem is your source of truth, and Roblox Studio is just a dumb client that reflects the state of your files. However, in practice, this design has some glaring limitations.
+All of this works around a "project file". This file tells Rojo how to map your local files to the game's hierarchy. For example, if you have a folder called `📂 server`, you can tell Rojo to map all scripts in that folder to `ServerScriptService`.
+
+In an ideal world, this would be perfect. You have a simple, clean architecture (`server/`, `client/`, `shared/`) where your filesystem is the source of truth, and Roblox Studio is just a dumb client that reflects the state of your files.
 
 # What's wrong with Rojo?
 
-If you ever used Roblox Studio, you might have noticed that it has some glaring differences from traditional files and folders. Objects like `Parts`, `Models`, `Meshes`... They aren't files, they're objects in a hierarchy. They have properties, they can be nested inside each other.
+## Fully Managed Rojo
 
-How does Rojo handle this? It makes you manually write down the structure of your game in the project file. If you want to create a new Part, you have to edit the `default.project.json`, and then tell Rojo where to put it in the hierarchy.
+If you ever used Roblox Studio, you might have noticed that it has some glaring differences from traditional files and folders. Objects like `Part`s, `Model`s, `Mesh`es... They aren't files, they're objects in a hierarchy. They have properties, and they can be nested inside each other.
+
+So, how does Rojo handle this? It makes you manually write down the structure of your game in the project file. If you want to create a new Part, you have to edit the `default.project.json`, and then tell Rojo where to put it in the hierarchy:
 
 ```javascript
 // Example: Adding a new Part called "CoolPart" to the Workspace
 "Workspace": {
   "$className": "Workspace",
-  "MyNewPart": {
+  "CoolPart": {
     "$className": "Part",
     "$properties": {
-      "Name": "CoolPart",
       "Anchored": true,
       "Size": [4, 1, 4],
       "Position": [0, 10, 0],
-      "Color": [255, 0, 0]
+      "Color": [1, 0, 0]
     }
   }
 }
 ```
 
-This is a very tedious and error-prone process. It also means that you can't use Rojo to edit your game in Studio, because any changes you make in Studio won't be reflected in your files.
+If your model is more complex than the example above (it usually is), you can manually reference the `.rbxm`/`.rbxmx` model file:
+
+```javascript
+"Workspace": {
+      "Car": {
+          "$path": "src/Car.rbxm"
+      }
+    },
+```
+
+This is Fully Managed Rojo, and it's a very tedious and error-prone way of creating a Roblox game.
+
+First, the model file itself is completely opaque.
+
+- Want to make a small edit? Adjust the position of something? Better open another instance of Studio, make the change, and re-export the model.
+
+Second, while Rojo's proposition of offline model management sounds interesting, it doesn't really work in practice. Roblox is fundamentally a live-service platform, both for the player and the developer. This comes with the implication that your assets (meshes, textures, sounds, etc.) must be stored on Roblox's servers at some point. This makes offline management of models very impractical.
+
+- Does your super-cool Car model have a `SurfaceAppearance` with a roughness map, color map and normal map? Well, after you export the images, upload them to Roblox, don't forget to open the model in a new Studio instance and re-assign the image IDs to the `SurfaceAppearance`.
 
 ## Partially Managed Rojo
 
-This is slightly alleviated if you choose to use something called "partially managed" Rojo. Essentially, you can tell Rojo to only manage specific folders in your project, which means you can still manage some parts of your project in Studio, and only specific parts with Rojo.
+The problems of Fully Managed Rojo are slightly alleviated if you choose to use something called "partially managed" Rojo. Essentially, you can tell Rojo to only "manage" or keep track of specific parts of your project, which means you can still manage some parts of your project in Studio, and only specific parts with Rojo.
 
-However, this leaves you in an akward middle-ground where your filesystem has a "blind spot" for anything that isn't "managed". You're giving up the ability for the filesystem to dictate what your project is, meaning you have to manage your project in two places: the filesystem, and Studio.
+For instance, in the previous example, you could tell Rojo to only manage `ServerScriptService`, `StarterPlayerScripts`, and `ReplicatedStorage`, and leave your super cool car model unmanaged.
+
+However, this leaves you in an awkward middle-ground where your filesystem has a "blind spot" for anything that isn't managed. You give up the main appeal of Rojo - the ability to define your project structure in the filesystem - resulting in you managing your project in two places: the filesystem, and Studio.
 
 This is a middle-ground many people choose to live in, but it can be a nightmare to manage.
 
@@ -84,10 +105,10 @@ Partially managed Rojo doesn't solve a problem I like to call "poisoned folders"
 
 </ImageGrid>
 
-If you want Rojo to properly manage the "poisoned" folder, you'll have to either add it to the project file, create a `.meta.json` for the Folder, or move the BoolValue out of the folder altogether.
+If you want Rojo to properly manage the "poisoned" folder, you'll have to either add it to the project file, create a `.model.json` for the Folder, or move the BoolValue out of the folder altogether.
 
 ```javascript
-// server/TestFolder/Folder/boolvalue.meta.json
+// server/TestFolder/Folder/boolvalue.model.json
 {
   "className": "BoolValue",
   "properties": {
@@ -98,15 +119,19 @@ If you want Rojo to properly manage the "poisoned" folder, you'll have to either
 
 This is a very silly example, but you can see how this can quickly become a nightmare to manage, especially with datatypes more complex than just a `true`/`false` value.
 
+> Some may argue that "poisoned" folders are a symptom of bad design. However, I would argue that's a very naive perspective. Roblox Studio is purposefully flexible and allows you to create any type of hierarchy you want. This is a very good thing, and it allows developers to be creative and make their games in the way that makes the most sense for them.
+
 ## Existing projects?
 
-Support for using existing projects is non-existant.
-
-Really. You just can't.
+Rojo is notoriously not the best tool for importing existing projects.
 
 The [only tool](https://github.com/rojo-rbx/rbxlx-to-rojo) that allowed you to use existing projects with Rojo [hasn't been maintained in 5 years](https://github.com/rojo-rbx/rbxlx-to-rojo/commits/master). It's 6th anniversary is this May!
 
 _(Fun fact: [My PR of rbxlx-to-rojo](https://github.com/rojo-rbx/rbxlx-to-rojo/pull/97) is one of the only ways to still use it!)_
+
+> **July Update:**
+>
+> The Rojo team have implemented [`rojo syncback`](https://github.com/rojo-rbx/rojo/releases/tag/v7.7.0), which is their solution for converting existing games to Rojo projects. While I commend them for going to great lengths to make this work (apparently, it's been in the works for a long time), it's still a very tedious and error-prone process, not solving many of the issues discussed in this article.
 
 # The "sync" part
 
@@ -114,9 +139,7 @@ In reality, Rojo isn't really a "sync" tool, is it?
 
 While Rojo likely started as a sync tool, it's evolved into what they call a "build tool", which means that its goal is to generate Roblox games from your filesystem. Rojo isn't trying to be a companion to Roblox Studio, it's trying to replace it.
 
-This explains many of the design decisions that make Rojo a burden to use for people that don't want to replace Studio. We're just not the target audience, and that's fine! But the issue is that many developers in the community still act like Rojo is a sync tool, recommending it for "editing your scripts with your IDE", which is just not what Rojo is.
-
-The ability to edit your game in Studio, and have those changes reflected in your files is a feature Rojo [barely supports](https://github.com/rojo-rbx/rojo/issues/164).
+This explains many of the design decisions that make Rojo a burden to use for people that don't want to replace Studio. We're just not the target audience, and that's fine!
 
 # The market for Rojo alternatives
 
@@ -138,11 +161,11 @@ If Rojo is the "Classic" way to build, Argon is the "Updated" way. It's generall
 
 But there's a catch. Despite all its polish, Argon is still fundamentally a build tool at its core. It still relies on the `*.project.json` manifest. It still requires you to map out your hierarchy in a configuration file if you want to do anything beyond the basics.
 
-While Argon makes the "Rojo way" much faster and more pleasant, it doesn't solve the core issue for developers who just want to sync.
+While Argon makes the "Rojo way" much faster and more pleasant through nice features and automations, it doesn't solve the core issue for developers who just want to sync.
 
 # Azul
 
-So, seeing no one alternative, I decided to make my own tool, Azul! (pun on Rojo intended)
+So, seeing no other alternative, I decided to make my own tool, Azul! (pun on Rojo intended)
 
 I wanted a tool that just worked, that didn't require me to change the way I worked, that worked with my existing projects, and that didn't require me to manage any project/meta files.
 
@@ -152,30 +175,28 @@ This is how Azul was born.
 
 Initially, Azul was supposed to be a "sourcemap builder", a patch on top of Roblox's Script Sync that let you get autocomplete support for your local files in Studio. However, it grew into a full-blown sync tool.
 
-It's one-click to start, it just works, it's fast, and it supports all the features I wanted.
+It's one command to get started, and it doesn't disrupt the normal workflow of Roblox Studio. You can edit your game in Studio, and have those changes reflected in your files. You can also edit your files, and have those changes reflected in Studio.
 
-## What I fixed
+## What I changed
 
-- **Studio is the source of truth**: Azul is very clear about the fact that Studio is the source of truth, and your filesystem is just a reflection of that. You can edit your game in Studio, and have those changes reflected in your files. You can also edit your files, and have those changes reflected in Studio.
-- **No more project files**: It's just one command to start Azul, and it just works. No more writing JSON files, no more managing meta files, no more worrying about the structure of your project.
-- **Support for existing projects**: Just point Azul to your existing project folder, and it will sync all the files in that folder to Studio. No more "importing" your project, no more "partially managed" folders.
+- **Studio is the source of truth**: Azul is very clear about the fact that Studio is the source of truth, and your filesystem is just a reflection of that.
+- **No more project files**: It's just one command to start Azul, and it just works. No more writing JSON files, no more managing model files, no more worrying about the structure of your project.
+- **Support for existing projects**: It's as easy as creating new projects, just run `azul` and it will automatically sync your existing project to your filesystem.
 - **No more "poisoned" folders**: You can have any type of object in your folders, because state isn't managed in your filesystem. Have Scripts inside tools, inside models, inside anything!
 - **Confusing conventions**: I always believed the `init.luau` convention was very obtuse, because your Script's name and location no longer corresponds to its location in Studio, so I got rid of it. _I actually made a lengthier post about this topic, if it piques your interest: [A case against `init.luau`](https://ransomwave.games/blog/a-case-against-init-luau)_
 
-## What I took from Rojo
+## What I kept from Rojo
 
-- **Backwards compatibility**: Azul has a compatibility layer for existing Rojo projects, so it can import your favorite Rojo projects and libraries just fine.
-- **Package Manager support**: Azul lets you use Wally, pesde or any other package manager to manage your dependencies, and it will sync them to Studio properly.
-- **Filesystem -> Studio**: Azul still supports the workflow of pushing projects from your filesystem to Studio, so it can still be used as a build tool if that's what you want. Turns out build tools aren't evil!
-- **Reproductible builds**: Azul lets you generate reproducible builds of your game in a few commands, just like Rojo.
+- **Filesystem -> Studio**: Azul offers the ability to import projects from your filesystem to Studio.
+- **Rojo Compatibility**: Azul has a compatibility layer for existing Rojo projects, so it can import your favorite Rojo projects and libraries just fine.
+- **Package Manager support**: You can use Wally, pesde or any other package manager to manage your dependencies, and it will sync them to Studio properly.
+- **Reproducible builds**: Azul lets you generate reproducible builds of your game in a few commands, just like Rojo. This lets you easily share your project with others or source control it.
 
 # Closing thoughts
 
 My goal with this project was to make something that I wanted to use, and I think I succeeded. Azul is the tool I use every day to make my games, and it has significantly improved my workflow. It's not perfect, and it still has some rough edges, but it's a tool that I enjoy using, and that's all that matters to me.
 
-However, I also hope that Azul can be a catalyst for change in the Roblox development community. I hope that it can inspire other developers to think outside the box, to challenge the status quo, and to create tools that are better suited for their needs.
-
-Rojo is a great tool, but it's not the only tool, and we deserve better than just one option.
+Rojo is not a bad tool, and I have a lot of respect for the work the Rojo team have done. However, I also believe that there is room for improvement, and I hope that Azul can be a step in that direction.
 
 ![](/blog-content/azul/azul-snippet.png)
 
