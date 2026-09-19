@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import PostDate from "@/components/post-date";
 
 interface BlogCardProps {
   title: string;
   link: string;
   description: string;
   imageUrl?: string;
-  date: string;
+  date?: string;
 }
 
 export default function BlogCard({
@@ -35,9 +36,7 @@ export default function BlogCard({
         <div className="p-4 flex flex-col h-full">
           <h2 className="text-xl mb-2 text-white">{title}</h2>
           <p className="text-sm text-gray-300 mb-4 flex-grow">{description}</p>
-          <p className="text-xs text-gray-400 mt-auto">
-            {new Date(date).toLocaleDateString()}
-          </p>
+          <PostDate date={date} className="block text-xs text-gray-400 mt-auto" />
         </div>
       </Link>
     </div>

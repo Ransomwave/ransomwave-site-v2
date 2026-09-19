@@ -7,6 +7,7 @@ import { Metadata } from "next";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { irBlack } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import ImageGrid from "@/components/image-grid";
+import PostDate from "@/components/post-date";
 
 const postsDirectory = path.join(process.cwd(), "src", "content", "blog");
 
@@ -175,7 +176,7 @@ export default async function BlogPost({
         {frontmatter.title ?? "Untitled"}
       </h1>
       <p className="text-center md:text-[1vw] mb-[2%]">
-        {frontmatter.date ?? "Undated"}
+        <PostDate date={frontmatter.date} />
       </p>
       <div className="mx-[5%]">{renderedContent}</div>
     </article>

@@ -26,7 +26,7 @@ export default async function BlogIndex() {
           title={post.title || post.slug}
           imageUrl={post.thumbnailUrl || ""}
           description={post.description || ""}
-          date={post.date || "Undated"}
+          date={post.date}
           link={`/blog/${post.slug}`}
         />
       ))}
