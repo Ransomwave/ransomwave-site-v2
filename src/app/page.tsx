@@ -23,7 +23,7 @@ export default function Home() {
           I’m <b>Ransomwave</b>, an independent game developer based in Spain.
           <br />
           <br />I created <b>get a drink at 3 am</b>, a singleplayer story
-          adventure game that has accumulated over 70,000,000 plays.
+          adventure game that has accumulated over 90,000,000 plays.
           <br />
           <br />
           Most of my time goes into programming, but I also enjoy learning new
@@ -31,7 +31,7 @@ export default function Home() {
           something new.
           <br />
           <br />
-          You can take a look at my{" "}
+          Take a look at my{" "}
           <Link className="underline font-bold" href="/games">
             games
           </Link>
@@ -39,7 +39,11 @@ export default function Home() {
           <Link className="underline font-bold" href="/other-projects">
             projects
           </Link>
-          , and other work.
+          ,{" "}
+          <Link className="underline font-bold" href="/other-projects">
+            blog
+          </Link>{" "}
+          & other work!
         </p>
         <ProfilePicture />
       </div>
