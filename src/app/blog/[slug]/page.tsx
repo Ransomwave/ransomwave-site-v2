@@ -42,7 +42,10 @@ const mdxComponents = {
     <a className="text-red-500 underline" target="_blank" {...props} />
   ),
   code: (props: React.ComponentProps<"code">) => (
-    <code className="bg-[rgba(0,0,0,0.7)] px-1 py-0.5 rounded" {...props} />
+    <code
+      className="bg-[rgba(0,0,0,0.7)] px-1 py-0.5 rounded break-words"
+      {...props}
+    />
   ),
   pre: (props: React.ComponentProps<"pre"> & { children?: any }) => {
     const className = props.children?.props?.className || "";
@@ -54,15 +57,18 @@ const mdxComponents = {
         style={irBlack}
         language={language}
         showLineNumbers={true}
-        wrapLongLines={true}
+        // Long lines scroll instead of wrapping: wrapLongLines turns every line
+        // into a flex row, which breaks indentation and squashes tokens.
+        className="max-w-full text-xs sm:text-sm md:text-base"
         customStyle={{
           backgroundColor: "rgba(0,0,0,0.7)",
           borderRadius: "0.375rem",
           padding: "1rem",
           marginBottom: "1rem",
+          overscrollBehaviorX: "contain",
         }}
       >
-        {String(code)}
+        {String(code).replace(/\n$/, "")}
       </SyntaxHighlighter>
     );
   },
