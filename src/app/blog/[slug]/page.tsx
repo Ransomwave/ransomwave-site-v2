@@ -75,7 +75,7 @@ const mdxComponents = {
   img: (props: React.ComponentProps<"img">) => (
     <>
       <img
-        className="mb-1 rounded-md shadow-md w-auto h-auto max-w-sm md:max-w-xl lg:max-w-2xl mx-auto"
+        className="mb-1 rounded-md shadow-md block w-auto h-auto max-w-[min(100%,42rem)] mx-auto"
         {...props}
       />
       {props.alt ? (
