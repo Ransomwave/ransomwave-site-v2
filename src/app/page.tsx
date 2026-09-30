@@ -40,7 +40,7 @@ export default function Home() {
             projects
           </Link>
           ,{" "}
-          <Link className="underline font-bold" href="/other-projects">
+          <Link className="underline font-bold" href="/blog">
             blog
           </Link>{" "}
           & other work!
