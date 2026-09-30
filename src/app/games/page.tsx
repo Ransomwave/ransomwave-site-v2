@@ -25,9 +25,7 @@ export default function Games() {
         Ransomwave's Games
       </h2>
       <p className="leading-5 md:text-[.9em] text-center mx-auto px-[5%]">
-        Here are primarely games I consider to be my "main" games, whether
-        because of their popularity or because of the amount of work I put into
-        them.
+        Games published under my development group, "Ransomwave's Games".
       </p>
       <div className="flex flex-row items-stretch flex-wrap justify-center mt-4 gap-4">
         <GameCard
