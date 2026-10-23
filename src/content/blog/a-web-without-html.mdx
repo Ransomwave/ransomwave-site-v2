@@ -1,0 +1,191 @@
+---
+title: "A Web Without HTML"
+date: "2026-10-23"
+description: "What would the web look like if the language that powers it looked different?"
+thumbnailUrl: "/blog-content/a-web-without-html/banner.png"
+---
+
+We all know that the web is powered by HTML, the markup language invented by Tim Berners-Lee at CERN in 1989. It's a greatly designed language that has provably stood the test of time. Today, even your fancy JSX React websites still compile down to HTML to render content.
+
+HTML's design as a language is remarkably interesting. It's a language made for non-technical document authors to create, well, documents. Structured documents, to be precise. This philosophy gives HTML a unique look and feel - differing from other more technically-oriented "document designer" languages like TeX.
+
+```html
+<!-- A simple HTML5 document -->
+<h1>Hello, World!</h1>
+<p>This is a simple HTML document.</p>
+<img src="https://example.com/image.jpg" alt="An example image" />
+<video src="https://example.com/video.mp4" controls></video>
+```
+
+If you've ever worked with XML, that snippet should look familiar: angle brackets, nested tags, quoted attributes, even that `/>` on the `<img>`. It's easy to assume HTML is just "XML for web pages."
+
+It's actually the other way around. XML didn't arrive until 1998. Both languages descend from _SGML_, a 1986 standard that wasn't really a markup language at all. It was a system for _defining_ markup languages. Organizations like CERN used it to invent their own document formats, and when Berners-Lee needed one for the web, he borrowed the look of CERN's in-house flavor and added a tag for links.
+
+In other words, HTML's syntax wasn't some inevitable law of nature. It was one pick from a toolbox designed to produce infinite variations.
+
+This raises an interesting question: what if he'd picked differently?
+
+# Historically plausible alternatives
+
+Let's dive into some historically plausible alternate picks. What I mean by this is that these are languages that were readily available around the time Tim Berners-Lee was designing HTML, and could have realistically been used!
+
+## S-Expressions (Lisp)
+
+```lisp
+(html
+  (head (title "My Page"))
+  (body
+    (h1 "Hello")
+    (p "See " (a :href "/next" "the next page") ".")))
+```
+
+Lisp is a family of programming languages that was invented in 1958. It is known for its unique syntax, which uses parentheses to denote function calls and data structures. S-expressions (symbolic expressions) are a way of representing nested data in a simple and uniform way, think of JSON but with parentheses instead of braces.
+
+The irony is that Brendan Eich was originally hired at Netscape to put Scheme in the browser, and management made him make it look like Java.
+
+In a world where documents were already S-expressions, that decision probably goes the other way. You'd get a homoiconic web, where the document, the code, and the data format share one syntax. The DOM wouldn't be a separate API bolted onto a parsed tree. It would just be the list you're holding. JSON would never need inventing, and templating would be quasiquoting rather than string concatenation, which removes a whole class of injection bugs.
+
+The cost is that the syntax is hostile to non-programmers writing by hand in Notepad, which is exactly who built the early web. Paren-matching errors would probably be fatal rather than tolerated, so the web might have grown slower and stayed more "engineered".
+
+## TeX-style markup
+
+A real option at a physics lab:
+
+```tex
+\title{My Page}
+\section{Hello}
+See \link{/next}{the next page}.
+```
+
+The early web would have been gorgeous typographically, with math rendering on day one instead of [waiting for about 25 years for MathML and MathJax](https://www.quora.com/Why-did-it-take-so-long-for-Quora-to-switch-to-MathJax-for-its-LaTeX-engine#:~:text=The%20display%20of,core%20corporate%20goal.).
+
+However, TeX macros are Turing-complete. Every page could be a program that can loop forever, so browsers would need sandboxing and execution limits from the start. In the early days of the web, that would have been a huge barrier to implementation & adoption. The web might have stayed a niche for academics and scientists, rather than exploding into the mainstream.
+
+Separating content from presentation would also have been much harder, since TeX's culture is "the author controls the layout". Who knows, maybe the web would have never developed a separate concept of styling. CSS might never have emerged as a separate idea.
+
+## Scribe-style @ commands
+
+```scribe
+@title(My Page)
+@heading(Hello)
+See @link[href="/next"](the next page).
+```
+
+Brian Reid, the author of Scribe, was a computer scientist at Carnegie Mellon University. Scribe was a markup language that used `@` commands to denote formatting and structure. It was designed to be easy to read and write, with a focus on separating content from presentation.
+
+Interestingly enough, Scribe was a direct influence on SGML, which in turn influenced HTML. This arguably shows how incidental the choice of angle brackets was. The web could have been a world of `@` commands instead, which would have made it look more like a set of commands than a document format.
+
+Another interesting thing about Scribe is that it pioneered the concept of "stylesheets" for documents, which is a precursor to CSS. If Scribe had been chosen as the basis for the web, we might have had a more robust and flexible styling system from the start.
+
+```scribe
+@Comment{ Layout definitions for the standard Report type }
+@PageHeading(Center "--- %P ---")
+@PageWidth(7.5 inches)
+@LeftMargin(1.0 inch)
+@LineWidth(5.5 inches)
+
+@Comment{ Define the global, default document settings }
+@Define(BodyStyle, Font "TimesRoman", Size 10 points,
+        Spacing 1.2 lines, Justification On)
+
+@Comment{ Define specific semantic environments }
+@Define(Heading, Font "Helvetica", FaceCode Bold, Size 14 points,
+        Above 0.5 inches, Below 0.2 inches, Need 1 inch)
+
+```
+
+_(As a final nitpick on this idea, I despise how comments are in `@Comment` blocks. A web with Batch-style `REM` comments is a nightmare to me!)_
+
+## Markdown-style markup
+
+A markdown-style language (for example, setext from 1991) would have been the most readable to write and the most painful to extend. As soon as people wanted forms, tables, and layout, the syntax would have splintered into incompatible flavors. You'd probably end up with an embedded structured escape hatch anyway, and that would become the “real” web language.
+
+# Let's have some fun
+
+Now, let's move into the realm of pure speculation. What if the web had been designed with a completely different syntax, one that was not around in 1990?
+
+## CSS-style syntax
+
+Actually, this is what inspired me to write this article! Reading through [this great article about the history of CSS](https://eev.ee/blog/2020/02/01/old-css-new-css/), I wondered what the web would look like if it had been designed with a CSS-style syntax from the start. Instead of angle brackets and nested tags, we could have had a more declarative, rule-based syntax.
+
+Surprisingly, this is not as far-fetched as it sounds. Many languages like Qt's QML, Apple's SwiftUI, and Kotlin's UI DSLs have adopted a similar approach to UI design, where the structure of the UI is defined using a declarative syntax that resembles CSS.
+
+A page in this hypothetical web might look like this:
+
+```css
+page {
+  title: "My Page";
+  lang: en;
+
+  h1 { "Hello" }
+
+  p.intro {
+    color: #333;
+    "See ";
+    a { href: "/next"; "the next page" }
+    ".";
+  }
+}
+```
+
+Elements are selector-ish blocks, attributes and styles are declarations, children nest inside, and text turns into a string statement.
+
+The first big consequence is that attributes and styles collapse into one thing. There's no reason to distinguish `href` from `color` when both are `key: value;`. Sounds tidy, but it means content and presentation are essentially fused from the start. A separate stylesheet would still appear, because people would want to restyle sites without editing every page.
+
+The second consequence is the fatal weakness: _mixed_ content. Text with inline markup is miserable in this syntax!
+
+Compare `See <a href="/next">the next page</a>` with the quoted, semicolon-separated fragments above. Angle-bracket markup is, at heart, a way to annotate running text, while brace syntax is a way to declare objects. A web built on braces would be great at apps and bad at documents, a completely opposing paradigm to HTML's.
+
+Additionally, the web's famous tolerance for errors gets interesting as well. A missing `}` will swallow everything after it, and there's no equivalent of browsers guessing that you forgot `</p>`. Browsers would still compete on forgiveness, but recovering from brace errors is much harder than tag recovery. The web would either be stricter or famously glitchy, with half-pages disappearing.
+
+## Components as primitives
+
+A reactive, component-based language that starts from the assumption that the web is a programming platform rather than a document platform would have been a very different web. It would have been more like React, Svelte, or Vue from the start, with a focus on interactivity and state management.
+
+```js
+component Inbox(user) {
+  state filter = "all"
+  let shown = user.messages.where(filter)
+
+  h1 { "Inbox (" shown.count ")" }
+  select bind=filter { "all" "unread" }
+  for m in shown { MessageRow(m) }
+}
+```
+
+Signals, scoped styles, typed props, and components would be actual primitives rather than framework abstractions. How nice does that sound?
+
+It's basically Svelte or SolidJS promoted to the platform level. The risk with this approach is that every page becomes a program, so nothing is statically readable without executing it, which is bad for search, archiving, and accessibility unless the language strictly separates a static render from interactivity.
+
+## Typst-style markup
+
+Typst is a new markup language that is designed to be easy to read and write, with a focus on typography and layout. It uses a syntax that is similar to Markdown, but with more powerful features for controlling the appearance of text.
+
+Typst-style dual-mode markup is, I think, the strongest contender, because it solves the CSS-style markup's mixed-content problem directly while maintaining the simplicity of a markup language. Typst defaults to prose mode, and `#` switches into code mode inline:
+
+```typst
+#let count = 3
+#let posts = (
+  (title: "First post", summary: [Hello, *world*.]),
+  (title: "Second post", summary: [More words here.]),
+)
+
+= Hello
+
+See #link("/next")[the next page]. You have #count unread messages.
+
+#for item in posts [
+  == #item.title
+  #item.summary
+]
+```
+
+Content reads like Markdown, structure and logic use a real expression language, and the boundary between them is one character. Content blocks (`[...]`) are first-class. You can pass them to functions, so components are just functions that take content.
+
+That fixes the core tension the brace-style web hit, and it fixes HTML's opposite problem, where logic has to live in a separate language that manipulates the document from outside.
+
+# Conclusion
+
+Line the alternatives up and a pattern shows. Most of them break on one of the same few things: they can't tolerate a typo, they can't annotate running text, or they assume every page is a program. HTML's angle brackets happen to be good at exactly those things. They're clunky to write but forgiving to parse, and built for marking up prose rather than declaring objects.
+
+The funny part is that the web became an app platform anyway. We just built the component-based web on top of HTML instead of in place of it. JSX, Svelte, & friends are all - in a sense - all the alternate webs from this article finding their way back into our reality through the back door.
